@@ -2097,8 +2097,16 @@ function recalcTab1() {
   document.getElementById("kpiFtesFreed").textContent = Math.round(ftesFreed).toLocaleString() + " FTEs";
   document.getElementById("kpiEffectiveCostPerCall").textContent = "Loaded human cost: $" + unitHumanCost.toFixed(2) + "/call";
 
+  // Compute fixed X-axis ceiling at 4.0x max surge for current inputs so bars always grow monotonically with Surge
+  const maxSurge = 4.0;
+  const maxSurgeCalls = baseVol * maxSurge;
+  const maxAnnualLegacy = ((maxSurgeCalls * (1 - baseCont) * unitHumanCost) + (maxSurgeCalls * baseCont * 0.14)) * 12;
+  const maxAnnualOmilia = ((maxSurgeCalls * targetCont * omiliaOutcomeRate) + (maxSurgeCalls * (1 - targetCont) * omiliaEscalatedUnitCost) + 6500) * 12;
+  const maxAnnualDiy = ((maxSurgeCalls * diyContainment * (0.58 * Math.pow(maxSurge, 1.38))) + (maxSurgeCalls * (1 - diyContainment) * unitHumanCost) + 28500) * 12;
+  const chartScaleMax = Math.max(maxAnnualLegacy, maxAnnualDiy, maxAnnualOmilia, 1);
+
   // Render SVG TCO Comparison Chart
-  renderTcoSvg(legacyMonthlyCost * 12, diyMonthlyCost * 12, omiliaMonthlyCost * 12, omiliaOutcomeRate);
+  renderTcoSvg(legacyMonthlyCost * 12, diyMonthlyCost * 12, omiliaMonthlyCost * 12, omiliaOutcomeRate, chartScaleMax);
 
   // Render Breakdown Table
   const tbody = document.getElementById("tcoComparisonTable");
@@ -2136,8 +2144,8 @@ function recalcTab1() {
   `;
 }
 
-function renderTcoSvg(annualLegacy, annualDiy, annualOmilia, outcomeRate = 0.40) {
-  const maxVal = Math.max(annualLegacy, annualDiy, annualOmilia, 1);
+function renderTcoSvg(annualLegacy, annualDiy, annualOmilia, outcomeRate = 0.40, scaleMax = 0) {
+  const maxVal = Math.max(scaleMax, annualLegacy, annualDiy, annualOmilia, 1);
   const bars = [
     { label: "1. Legacy Human-Heavy Baseline", val: annualLegacy, color: "#64748b", note: "High live-agent AHT & KBA burden" },
     { label: "2. DIY Frontier LLM + Glue Stack", val: annualDiy, color: "#f43f5e", note: "Nonlinear token surge + integration tax" },
