@@ -1237,12 +1237,12 @@
 
           <div class="form-row">
             <div class="form-label-row">
-              <span>Phase 1 Bounded Intents (Synced with AI Radar 2.0)</span>
-              <span class="val-badge" id="valIntentCount">7 Intents</span>
+              <span>Phase 1 Bounded Intents (Top-Right Radar Quadrant)</span>
+              <span class="val-badge" id="valIntentCount">4 Intents</span>
             </div>
-            <input type="range" id="inpIntentCount" min="0" max="8" step="1" value="7">
+            <input type="range" id="inpIntentCount" min="0" max="8" step="1" value="4">
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
-              Deleting or toggling off use cases on AI Radar 2.0 automatically updates this scope &amp; HLEE effort.
+              Includes only Top-Right Quadrant (Immediate Funding: Feasibility &ge;50 &amp; Impact &ge;50) intents from AI Radar 2.0.
             </div>
           </div>
 
@@ -1301,14 +1301,14 @@
             </div>
           </div>
 
-          <!-- Included Phase 1 Use Cases List (Synced from AI Radar 2.0) -->
+          <!-- Included Phase 1 Use Cases List (Top-Right Radar Quadrant) -->
           <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--accent-teal);">
-                  Included Phase 1 Use Cases (From AI Radar 2.0)
+                  Included Phase 1 Use Cases (Top-Right Radar Quadrant)
                 </span>
-                <span class="tag tag-teal" id="scopingIncludedCountBadge">7 Included</span>
+                <span class="tag tag-teal" id="scopingIncludedCountBadge">4 Included</span>
               </div>
               <button type="button" class="btn btn-sm" id="btnScopingReloadDefaults" title="Reload default vertical preset use cases">Reload Default Use Cases</button>
             </div>
@@ -1899,11 +1899,11 @@ let state = {
   vertical: "banking",
   selectedUcIndex: 0,
   activeUseCases: {
-    banking: VERTICAL_PRESETS.banking.useCases.map(u => ({ ...u, included: true })),
-    utilities: VERTICAL_PRESETS.utilities.useCases.map(u => ({ ...u, included: true })),
-    insurance: VERTICAL_PRESETS.insurance.useCases.map(u => ({ ...u, included: true })),
-    healthcare: VERTICAL_PRESETS.healthcare.useCases.map(u => ({ ...u, included: true })),
-    telecom: VERTICAL_PRESETS.telecom.useCases.map(u => ({ ...u, included: true }))
+    banking: VERTICAL_PRESETS.banking.useCases.map(u => ({ ...u, included: u.feas >= 50 && u.imp >= 50 })),
+    utilities: VERTICAL_PRESETS.utilities.useCases.map(u => ({ ...u, included: u.feas >= 50 && u.imp >= 50 })),
+    insurance: VERTICAL_PRESETS.insurance.useCases.map(u => ({ ...u, included: u.feas >= 50 && u.imp >= 50 })),
+    healthcare: VERTICAL_PRESETS.healthcare.useCases.map(u => ({ ...u, included: u.feas >= 50 && u.imp >= 50 })),
+    telecom: VERTICAL_PRESETS.telecom.useCases.map(u => ({ ...u, included: u.feas >= 50 && u.imp >= 50 }))
   },
   activeModalFile: "index"
 };
@@ -2184,8 +2184,18 @@ function getActiveUseCases() {
   return state.activeUseCases[state.vertical];
 }
 
+function isTopRightQuadrant(uc) {
+  return uc.feas >= 50 && uc.imp >= 50;
+}
+
+function getTopRightUseCases() {
+  return getActiveUseCases()
+    .map((uc, idx) => ({ uc, idx }))
+    .filter(({ uc }) => isTopRightQuadrant(uc));
+}
+
 function getIncludedUseCases() {
-  return getActiveUseCases().filter(uc => uc.included !== false);
+  return getActiveUseCases().filter(uc => isTopRightQuadrant(uc) && uc.included !== false);
 }
 
 function getUseCasePsDays(uc) {
@@ -2211,6 +2221,10 @@ function toggleUseCaseIncluded(idx) {
   const list = getActiveUseCases();
   if (idx < 0 || idx >= list.length) return;
   const uc = list[idx];
+  if (!isTopRightQuadrant(uc)) {
+    showToast(`"${uc.name}" is outside the Top-Right Quadrant and excluded from Phase 1 SOW`);
+    return;
+  }
   uc.included = uc.included === false ? true : false;
   selectUseCase(state.selectedUcIndex);
   recalcTab3();
@@ -2253,7 +2267,10 @@ function clearAllUseCases() {
 }
 
 function restoreDefaultUseCases() {
-  state.activeUseCases[state.vertical] = VERTICAL_PRESETS[state.vertical].useCases.map(u => ({ ...u, included: true }));
+  state.activeUseCases[state.vertical] = VERTICAL_PRESETS[state.vertical].useCases.map(u => ({
+    ...u,
+    included: isTopRightQuadrant(u)
+  }));
   state.selectedUcIndex = 0;
   selectUseCase(0);
   recalcTab3();
@@ -2262,6 +2279,7 @@ function restoreDefaultUseCases() {
 
 function renderRadar() {
   const list = getActiveUseCases();
+  const topRightCount = getTopRightUseCases().length;
   const includedCount = getIncludedUseCases().length;
   const padL = 54, padR = 24, padT = 24, padB = 44;
   const w = 680 - padL - padR;
@@ -2306,17 +2324,18 @@ function renderRadar() {
       const cy = padT + h - (uc.imp / 100) * h;
       const q = getQuadrantMeta(uc.feas, uc.imp);
       const isSelected = idx === state.selectedUcIndex;
-      const isIncluded = uc.included !== false;
+      const isTopRight = isTopRightQuadrant(uc);
+      const isToggledOff = isTopRight && uc.included === false;
       const shortLabel = uc.name.length > 22 ? uc.name.slice(0, 20) + "…" : uc.name;
       const anchor = uc.feas > 72 ? "end" : "start";
       const textDx = uc.feas > 72 ? -11 : 11;
 
       svg += `
-        <g class="radar-pin" onclick="selectUseCase(${idx})" opacity="${isIncluded ? "1" : "0.4"}">
+        <g class="radar-pin" onclick="selectUseCase(${idx})" opacity="${isToggledOff ? "0.4" : "1"}">
           ${isSelected ? `<circle cx="${cx}" cy="${cy}" r="14" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="3,2" />` : ""}
           <circle class="pin-core" cx="${cx}" cy="${cy}" r="${isSelected ? 8 : 6.5}" fill="${q.color}" stroke="#070d19" stroke-width="2" />
           <text x="${cx + textDx}" y="${cy + 4}" fill="${isSelected ? "#ffffff" : "#cbd5e1"}" font-size="10.5" font-weight="${isSelected ? "700" : "600"}" text-anchor="${anchor}">
-            <tspan ${!isIncluded ? 'text-decoration="line-through"' : ''}>${shortLabel}</tspan>
+            <tspan ${isToggledOff ? 'text-decoration="line-through"' : ''}>${shortLabel}</tspan>
             <tspan class="radar-pin-del" dx="4" onclick="event.stopPropagation(); deleteUseCase(${idx})"><title>Remove ${uc.name}</title>&times;</tspan>
           </text>
         </g>
@@ -2328,7 +2347,7 @@ function renderRadar() {
 
   // Render Quick List
   const container = document.getElementById("ucListContainer");
-  document.getElementById("ucCountLabel").textContent = `${includedCount} of ${list.length} included in Phase 1 SOW`;
+  document.getElementById("ucCountLabel").textContent = `${list.length} plotted (${includedCount}/${topRightCount} top-right in Phase 1 SOW)`;
 
   if (list.length === 0) {
     container.innerHTML = `
@@ -2342,14 +2361,18 @@ function renderRadar() {
 
   container.innerHTML = list.map((uc, idx) => {
     const q = getQuadrantMeta(uc.feas, uc.imp);
-    const isIncluded = uc.included !== false;
+    const isTopRight = isTopRightQuadrant(uc);
+    const isIncluded = isTopRight && uc.included !== false;
     const activeStyle = idx === state.selectedUcIndex ? "border-color: var(--accent-teal); background: rgba(20,184,166,0.1);" : "";
-    const dimStyle = !isIncluded ? "opacity: 0.55;" : "";
+    const dimStyle = (isTopRight && !isIncluded) ? "opacity: 0.55;" : "";
     return `
       <div onclick="selectUseCase(${idx})" style="cursor:pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-subtle); background: var(--bg-input); display:flex; justify-content:space-between; align-items:center; gap:8px; ${activeStyle} ${dimStyle}">
         <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
-          <input type="checkbox" ${isIncluded ? "checked" : ""} onclick="event.stopPropagation(); toggleUseCaseIncluded(${idx})" title="Include ${uc.name} in Phase 1 Deal Scoping" style="cursor: pointer; accent-color: var(--accent-teal); width: 14px; height: 14px; flex-shrink: 0;">
-          <span style="font-size: 12px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${!isIncluded ? 'text-decoration: line-through;' : ''}">${uc.name}</span>
+          ${isTopRight
+            ? `<input type="checkbox" ${isIncluded ? "checked" : ""} onclick="event.stopPropagation(); toggleUseCaseIncluded(${idx})" title="Toggle Phase 1 Deal Scoping inclusion" style="cursor: pointer; accent-color: var(--accent-teal); width: 14px; height: 14px; flex-shrink: 0;">`
+            : `<span title="Outside Top-Right Quadrant (Not in Phase 1 SOW)" style="width: 14px; text-align: center; color: var(--text-muted); font-size: 11px; flex-shrink: 0;">&mdash;</span>`
+          }
+          <span style="font-size: 12px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${(isTopRight && !isIncluded) ? 'text-decoration: line-through;' : ''}">${uc.name}</span>
         </div>
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
           <span class="tag ${q.tagClass}">${uc.feas}F / ${uc.imp}I</span>
@@ -2388,17 +2411,22 @@ function selectUseCase(idx) {
   if (idx < 0 || !list[idx]) idx = 0;
   state.selectedUcIndex = idx;
   const uc = list[idx];
-  const isIncluded = uc.included !== false;
+  const isTopRight = isTopRightQuadrant(uc);
+  const isIncluded = isTopRight && uc.included !== false;
   const q = getQuadrantMeta(uc.feas, uc.imp);
 
   qTag.textContent = q.label;
   qTag.className = "tag " + q.tagClass;
   if (delBtn) delBtn.style.display = "inline-flex";
   if (toggleBtn) {
-    toggleBtn.style.display = "inline-flex";
-    toggleBtn.textContent = isIncluded ? "✓ Included in SOW" : "Excluded (Click to Include)";
-    toggleBtn.style.borderColor = isIncluded ? "var(--accent-teal)" : "var(--border-subtle)";
-    toggleBtn.style.color = isIncluded ? "#2dd4bf" : "var(--text-secondary)";
+    if (isTopRight) {
+      toggleBtn.style.display = "inline-flex";
+      toggleBtn.textContent = isIncluded ? "✓ Included in SOW" : "Excluded (Click to Include)";
+      toggleBtn.style.borderColor = isIncluded ? "var(--accent-teal)" : "var(--border-subtle)";
+      toggleBtn.style.color = isIncluded ? "#2dd4bf" : "var(--text-secondary)";
+    } else {
+      toggleBtn.style.display = "none";
+    }
   }
 
   document.getElementById("inspUcTitle").textContent = uc.name;
@@ -2422,11 +2450,12 @@ document.getElementById("btnAddCustomUc").addEventListener("click", () => {
   const imp = Math.min(99, Math.max(5, parseInt(document.getElementById("inpCustomUcImp").value, 10) || 80));
 
   const isHighFeas = feas >= 50;
+  const inTopRight = feas >= 50 && imp >= 50;
   const newUc = {
     name,
     feas,
     imp,
-    included: true,
+    included: inTopRight,
     desc: `Custom prospect call driver scoped live during ${VERTICAL_PRESETS[state.vertical].name} discovery.`,
     runtime: isHighFeas ? "Deterministic miniApps® + AI Bootstrapping" : "Autonomous Task Agent + Human-in-the-Loop Gate",
     rollout: isHighFeas
@@ -2440,7 +2469,11 @@ document.getElementById("btnAddCustomUc").addEventListener("click", () => {
   const newIdx = getActiveUseCases().length - 1;
   selectUseCase(newIdx);
   recalcTab3();
-  showToast(`Plotted "${name}" on AI Radar 2.0 & added to Deal Scope`);
+  showToast(
+    inTopRight
+      ? `Plotted "${name}" in Top-Right Quadrant & added to Phase 1 Deal Scope`
+      : `Plotted "${name}" on AI Radar 2.0 (outside Top-Right Phase 1 scope)`
+  );
 });
 
 document.getElementById("btnResetClearAllUc").addEventListener("click", clearAllUseCases);
@@ -2469,16 +2502,16 @@ function recalcTab3() {
   const sov = document.getElementById("selSovereignty").value;
   const apiReady = document.getElementById("selApiReadiness").value;
 
-  const activeList = getActiveUseCases();
+  const topRightEntries = getTopRightUseCases();
   const includedList = getIncludedUseCases();
   const intents = includedList.length;
 
   const intentSlider = document.getElementById("inpIntentCount");
-  intentSlider.max = Math.max(1, activeList.length);
+  intentSlider.max = Math.max(1, topRightEntries.length);
   intentSlider.value = intents;
 
   document.getElementById("valIntentCount").textContent = `${intents} Intent${intents === 1 ? "" : "s"}`;
-  document.getElementById("scopingIncludedCountBadge").textContent = `${intents} of ${activeList.length} Plotted Included`;
+  document.getElementById("scopingIncludedCountBadge").textContent = `${intents} of ${topRightEntries.length} Top-Right Included`;
 
   // Compliance Badges & Backend Stack
   document.getElementById("scopingComplianceBadges").innerHTML = preset.compliance
@@ -2486,7 +2519,7 @@ function recalcTab3() {
     .join("");
   document.getElementById("scopingBackendStack").textContent = preset.backendStack;
 
-  // Deterministic HLEE Calculation driven directly by included AI Radar 2.0 use cases
+  // Deterministic HLEE Calculation driven strictly by Top-Right Quadrant included use cases
   let weeks = 0;
   let psDays = 0;
   if (intents > 0) {
@@ -2513,16 +2546,17 @@ function recalcTab3() {
     document.getElementById("hleeTimelineBadge").textContent = "0 Intents Scoped";
   }
 
-  // Render Included Phase 1 Use Cases inside Scoping Summary
+  // Render Included Phase 1 Use Cases (Top-Right Radar Quadrant only) inside Scoping Summary
   const phase1Container = document.getElementById("scopingPhase1UseCasesList");
-  if (activeList.length === 0) {
+  if (topRightEntries.length === 0) {
     phase1Container.innerHTML = `
       <div style="padding: 12px; border-radius: 6px; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-secondary); font-size: 12px;">
-        No use cases plotted on AI Radar 2.0. Click <strong>Reload Default Use Cases</strong> above or plot custom call drivers on Tab 2.
+        No Top-Right Quadrant (Feasibility &ge;50 &amp; Impact &ge;50) use cases currently plotted on AI Radar 2.0.<br>
+        <span style="font-size: 11px;">Click <strong>Reload Default Use Cases</strong> above or plot a high-feasibility/high-impact use case on Tab 2.</span>
       </div>
     `;
   } else {
-    phase1Container.innerHTML = activeList.map((uc, idx) => {
+    phase1Container.innerHTML = topRightEntries.map(({ uc, idx }) => {
       const isIncluded = uc.included !== false;
       const q = getQuadrantMeta(uc.feas, uc.imp);
       const ucDays = getUseCasePsDays(uc);
@@ -2555,10 +2589,10 @@ function recalcTab3() {
 
   // SOW Guardrails
   const includedNamesSummary = intents > 0
-    ? includedList.slice(0, 5).map(u => u.name).join(", ") + (intents > 5 ? ` (+${intents - 5} more)` : "")
-    : "No intents currently selected";
+    ? includedList.map(u => u.name).join(", ")
+    : "No Top-Right Quadrant intents currently selected";
   const guardrails = [
-    `<strong>Active Radar Scope (${intents} Intent${intents === 1 ? "" : "s"}):</strong> ${includedNamesSummary}.`,
+    `<strong>80/20 Top-Right Quadrant Scope (${intents} Intent${intents === 1 ? "" : "s"}):</strong> ${includedNamesSummary}.`,
     `<strong>Sub-300ms Latency SLA Boundary:</strong> Omilia guarantees &lt;300ms parallel orchestration and &lt;45ms Lexis TTS; customer/partner owns downstream ${preset.shortName} API response latency.`,
     apiReady === "mainframe"
       ? `<strong>Mainframe Middleware Gate:</strong> Customer/GSI must expose REST/MCP facade (e.g., IBM z/OS Connect or MQ REST bridge) prior to Sprint 2; 3270 screen-scraping is out of SLA scope.`
@@ -2592,9 +2626,9 @@ function recalcTab3() {
 
 document.getElementById("inpIntentCount").addEventListener("input", (e) => {
   const targetCount = parseInt(e.target.value, 10) || 0;
-  const activeList = getActiveUseCases();
-  activeList.forEach((uc, idx) => {
-    uc.included = idx < targetCount;
+  const topRightEntries = getTopRightUseCases();
+  topRightEntries.forEach(({ uc }, i) => {
+    uc.included = i < targetCount;
   });
   selectUseCase(state.selectedUcIndex);
   recalcTab3();
