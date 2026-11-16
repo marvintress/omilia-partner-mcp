@@ -950,6 +950,14 @@
 
           <div class="form-row">
             <div class="form-label-row">
+              <span>Omilia Outcome Rate ($ / Resolved Call)</span>
+              <span class="val-badge" id="valOmiliaOutcomeRate">$0.40</span>
+            </div>
+            <input type="range" id="inpOmiliaOutcomeRate" min="0.15" max="1.00" step="0.01" value="0.40">
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row">
               <span>Average Handle Time (AHT)</span>
               <span class="val-badge" id="valAht">340s</span>
             </div>
@@ -1065,7 +1073,7 @@
               <div class="card-title">Annualized TCO Comparison: Human Baseline vs. DIY Frontier LLM vs. Omilia OCP</div>
               <div class="card-subtitle">Includes peak surge multiplier, API orchestration tax, and residual human escalation labor</div>
             </div>
-            <span class="tag tag-emerald">Outcome-Based Pricing ($0.40/res)</span>
+            <span class="tag tag-emerald" id="tcoOutcomePriceBadge">Outcome-Based Pricing ($0.40/res)</span>
           </div>
 
           <div id="tcoSvgChart" style="width: 100%; overflow-x: auto;"></div>
@@ -2021,6 +2029,7 @@ function recalcTab1() {
   const baseVol = parseFloat(document.getElementById("inpCallVolume").value);
   const baseCont = parseFloat(document.getElementById("inpBaseContainment").value) / 100;
   const targetCont = Math.max(baseCont + 0.05, parseFloat(document.getElementById("inpTargetContainment").value) / 100);
+  const omiliaOutcomeRate = parseFloat(document.getElementById("inpOmiliaOutcomeRate").value) || 0.40;
   const aht = parseFloat(document.getElementById("inpAht").value);
   const acw = parseFloat(document.getElementById("inpAcw").value);
   const surge = parseFloat(document.getElementById("inpSurge").value);
@@ -2033,6 +2042,8 @@ function recalcTab1() {
   document.getElementById("valCallVolume").textContent = baseVol.toLocaleString();
   document.getElementById("valBaseContainment").textContent = Math.round(baseCont * 100) + "%";
   document.getElementById("valTargetContainment").textContent = Math.round(targetCont * 100) + "%";
+  document.getElementById("valOmiliaOutcomeRate").textContent = "$" + omiliaOutcomeRate.toFixed(2);
+  document.getElementById("tcoOutcomePriceBadge").textContent = `Outcome-Based Pricing ($${omiliaOutcomeRate.toFixed(2)}/res)`;
   document.getElementById("valAht").textContent = aht + "s";
   document.getElementById("valSurge").textContent = surge.toFixed(1) + "x";
 
@@ -2052,7 +2063,6 @@ function recalcTab1() {
   const totalHandleSec = Math.max(60, aht + acw);
   const assistedTimeRatio = Math.max(0.55, (totalHandleSec - tgSecSaved - cpSecSaved) / totalHandleSec);
   const omiliaEscalatedUnitCost = unitHumanCost * assistedTimeRatio;
-  const omiliaOutcomeRate = 0.40; // Flat $0.40 per resolved interaction
   const omiliaMonthlyCost = (omiliaAutomatedCalls * omiliaOutcomeRate) + (omiliaEscalatedCalls * omiliaEscalatedUnitCost) + 6500;
 
   // 3. DIY Frontier LLM Stack Monthly Cost (nonlinear token burn + multi-vendor orchestration tax)
@@ -2088,7 +2098,7 @@ function recalcTab1() {
   document.getElementById("kpiEffectiveCostPerCall").textContent = "Loaded human cost: $" + unitHumanCost.toFixed(2) + "/call";
 
   // Render SVG TCO Comparison Chart
-  renderTcoSvg(legacyMonthlyCost * 12, diyMonthlyCost * 12, omiliaMonthlyCost * 12);
+  renderTcoSvg(legacyMonthlyCost * 12, diyMonthlyCost * 12, omiliaMonthlyCost * 12, omiliaOutcomeRate);
 
   // Render Breakdown Table
   const tbody = document.getElementById("tcoComparisonTable");
@@ -2126,12 +2136,12 @@ function recalcTab1() {
   `;
 }
 
-function renderTcoSvg(annualLegacy, annualDiy, annualOmilia) {
+function renderTcoSvg(annualLegacy, annualDiy, annualOmilia, outcomeRate = 0.40) {
   const maxVal = Math.max(annualLegacy, annualDiy, annualOmilia, 1);
   const bars = [
     { label: "1. Legacy Human-Heavy Baseline", val: annualLegacy, color: "#64748b", note: "High live-agent AHT & KBA burden" },
     { label: "2. DIY Frontier LLM + Glue Stack", val: annualDiy, color: "#f43f5e", note: "Nonlinear token surge + integration tax" },
-    { label: "3. Omilia OCP Outcome Runtime", val: annualOmilia, color: "#14b8a6", note: "Flat $0.40/resolved + TalkGuard + CoPilot" }
+    { label: "3. Omilia OCP Outcome Runtime", val: annualOmilia, color: "#14b8a6", note: `Flat $${outcomeRate.toFixed(2)}/resolved + TalkGuard + CoPilot` }
   ];
 
   let svg = `<svg viewBox="0 0 680 195" style="width:100%; height:auto; display:block;">`;
@@ -2151,7 +2161,7 @@ function renderTcoSvg(annualLegacy, annualDiy, annualOmilia) {
 }
 
 // Event bindings for Tab 1
-["inpCallVolume", "inpBaseContainment", "inpTargetContainment", "inpAht", "inpSurge", "inpWage", "inpBurden", "inpOccupancy", "inpAcw", "inpCfoOverrideVal", "inpAgents", "inpShiftHours", "inpWorkDays"].forEach(id => {
+["inpCallVolume", "inpBaseContainment", "inpTargetContainment", "inpOmiliaOutcomeRate", "inpAht", "inpSurge", "inpWage", "inpBurden", "inpOccupancy", "inpAcw", "inpCfoOverrideVal", "inpAgents", "inpShiftHours", "inpWorkDays"].forEach(id => {
   document.getElementById(id).addEventListener("input", recalcTab1);
 });
 
