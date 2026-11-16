@@ -1,0 +1,2754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omilia Enterprise CX ROI &amp; Partner Deal-Scoping Workbench</title>
+<style>
+  :root {
+    --bg-canvas: #070d19;
+    --bg-surface: #0f172a;
+    --bg-card: #131f38;
+    --bg-input: #0a1120;
+    --bg-hover: #1b2a4a;
+    --border-subtle: #233354;
+    --border-strong: #334a78;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-teal: #14b8a6;
+    --accent-teal-dim: rgba(20, 184, 166, 0.14);
+    --accent-cyan: #38bdf8;
+    --accent-blue: #3b82f6;
+    --accent-indigo: #818cf8;
+    --accent-amber: #f59e0b;
+    --accent-amber-dim: rgba(245, 158, 11, 0.15);
+    --accent-rose: #f43f5e;
+    --accent-rose-dim: rgba(244, 63, 94, 0.15);
+    --accent-emerald: #10b981;
+    --accent-emerald-dim: rgba(16, 185, 129, 0.15);
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --radius-sm: 6px;
+    --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header Bar */
+  .topbar {
+    background: linear-gradient(180deg, #0c1528 0%, #09101f 100%);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 14px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    backdrop-filter: blur(10px);
+  }
+
+  .topbar-inner {
+    max-width: 1480px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .brand-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-teal), var(--accent-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: #041019;
+    letter-spacing: -0.04em;
+    box-shadow: 0 0 16px rgba(20, 184, 166, 0.35);
+  }
+
+  .brand-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: block;
+  }
+
+  /* Global Industry Vertical Selector */
+  .vertical-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-teal);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 18px rgba(20, 184, 166, 0.14);
+  }
+
+  .vertical-control label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-teal);
+    white-space: nowrap;
+  }
+
+  .vertical-control select {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .vertical-control select:focus {
+    border-color: var(--accent-cyan);
+  }
+
+  .status-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+  }
+
+  .pill-live {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: var(--accent-emerald-dim);
+    color: #34d399;
+  }
+
+  .dot-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  /* Navigation Tabs */
+  .nav-bar {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0 24px;
+    overflow-x: auto;
+  }
+
+  .nav-inner {
+    max-width: 1480px;
+    margin: 0 auto;
+    display: flex;
+    gap: 6px;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary);
+    padding: 13px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+  }
+
+  .tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .tab-btn.active {
+    color: var(--accent-teal);
+    border-bottom-color: var(--accent-teal);
+    background: rgba(20, 184, 166, 0.06);
+  }
+
+  .tab-num {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+  }
+
+  .tab-btn.active .tab-num {
+    background: var(--accent-teal);
+    color: #041019;
+    border-color: var(--accent-teal);
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 22px 24px 60px;
+  }
+
+  .tab-panel {
+    display: none;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Grid & Cards */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .col-5 { grid-column: span 5; }
+  .col-7 { grid-column: span 7; }
+  .col-6 { grid-column: span 6; }
+  .col-4 { grid-column: span 4; }
+  .col-8 { grid-column: span 8; }
+  .col-12 { grid-column: span 12; }
+
+  @media (max-width: 1080px) {
+    .col-5, .col-7, .col-6, .col-4, .col-8 {
+      grid-column: span 12;
+    }
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* KPI Strip */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 1200px) {
+    .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .kpi-card {
+    background: linear-gradient(160deg, #16233f 0%, #101a30 100%);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card.highlight {
+    border-color: rgba(20, 184, 166, 0.5);
+    background: linear-gradient(160deg, rgba(20, 184, 166, 0.14) 0%, #101a30 100%);
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .kpi-val {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .kpi-card.highlight .kpi-val {
+    color: var(--accent-teal);
+  }
+
+  .kpi-foot {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Form Controls */
+  .form-row {
+    margin-bottom: 13px;
+  }
+
+  .form-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+  }
+
+  .val-badge {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    background: rgba(56, 189, 248, 0.12);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent-teal);
+    cursor: pointer;
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 4px;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  select.input-select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: var(--font-sans);
+    outline: none;
+  }
+
+  input[type="number"]:focus,
+  input[type="text"]:focus,
+  select.input-select:focus {
+    border-color: var(--accent-teal);
+  }
+
+  .input-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .input-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  /* Buttons & Presets */
+  .btn {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+
+  .btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-cyan);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-teal), #0d9488);
+    color: #031513;
+    border: none;
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.08);
+    background: linear-gradient(135deg, var(--accent-teal), #0d9488);
+  }
+
+  .btn-sm {
+    padding: 4px 9px;
+    font-size: 11px;
+  }
+
+  .preset-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  /* Toggle Switch */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 11px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
+  }
+
+  .toggle-info strong {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-primary);
+  }
+
+  .toggle-info span {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider-switch {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #263656;
+    transition: 0.2s;
+    border-radius: 22px;
+  }
+
+  .slider-switch:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #f8fafc;
+    transition: 0.2s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider-switch {
+    background-color: var(--accent-teal);
+  }
+
+  input:checked + .slider-switch:before {
+    transform: translateX(18px);
+  }
+
+  /* Tables & Badges */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(10, 17, 32, 0.5);
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(35, 51, 84, 0.6);
+    color: var(--text-primary);
+    vertical-align: top;
+  }
+
+  tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .tag-teal { background: var(--accent-teal-dim); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.35); }
+  .tag-amber { background: var(--accent-amber-dim); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+  .tag-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35); }
+  .tag-rose { background: var(--accent-rose-dim); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35); }
+  .tag-emerald { background: var(--accent-emerald-dim); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+
+  /* Radar SVG Container */
+  .radar-wrap {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px;
+  }
+
+  .radar-pin {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .radar-pin:hover circle.pin-core {
+    stroke-width: 3px;
+    stroke: #ffffff;
+  }
+
+  /* Terminal / JSON Wire Trace */
+  .code-console {
+    background: #060a13;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: #cbd5e1;
+    overflow-x: auto;
+    max-height: 360px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .waterfall-bar-wrap {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .wf-row {
+    margin-bottom: 12px;
+  }
+
+  .wf-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .wf-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+
+  .wf-track {
+    height: 18px;
+    background: #070c17;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    border: 1px solid #1e2d4a;
+  }
+
+  .wf-seg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #041019;
+    transition: width 0.35s ease;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 7, 18, 0.8);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 840px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 10px 18px 0;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .modal-tab {
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: var(--text-secondary);
+    padding: 7px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+  }
+
+  .modal-tab.active {
+    background: #060a13;
+    color: var(--accent-teal);
+    border-color: var(--border-subtle);
+  }
+
+  .modal-body {
+    padding: 16px 18px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    background: #0f1f38;
+    border: 1px solid var(--accent-teal);
+    color: var(--text-primary);
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    font-size: 12.5px;
+    font-weight: 600;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: 120;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  @media print {
+    .topbar, .nav-bar, .no-print { display: none !important; }
+    body { background: #ffffff; color: #0f172a; }
+    .card { border: 1px solid #cbd5e1; background: #ffffff; color: #0f172a; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER BAR -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-cluster">
+      <div class="brand-logo">
+        <div class="brand-badge">OCP</div>
+        <div>
+          <span class="brand-title">Omilia Enterprise CX ROI &amp; Partner Deal-Scoping Workbench</span>
+          <span class="brand-sub">Sovereign Speech-to-Speech Runtime &bull; Blended Deterministic + Agentic MCP &bull; Sub-300ms Tool SLA</span>
+        </div>
+      </div>
+
+      <!-- GLOBAL INDUSTRY VERTICAL SELECTOR -->
+      <div class="vertical-control">
+        <label for="verticalSelect">Industry Vertical</label>
+        <select id="verticalSelect">
+          <option value="banking">Banking &amp; Financial Services</option>
+          <option value="utilities">Energy &amp; Utilities</option>
+          <option value="insurance">Insurance (P&amp;C / Health)</option>
+          <option value="healthcare">Healthcare &amp; Payers</option>
+          <option value="telecom">Telecoms, Retail &amp; Logistics</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="status-pills">
+      <span class="pill pill-live"><span class="dot-pulse"></span> ZERO FRONTIER EGRESS</span>
+      <span class="pill" id="headerCompliancePill">PCI DSS L1 &bull; SOC 2 T2 &bull; GDPR</span>
+      <span class="pill">Lexis TTS &lt;45ms</span>
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION TABS -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <button class="tab-btn active" data-tab="tab1"><span class="tab-num">1</span> Unit Economics &amp; TCO Simulator</button>
+    <button class="tab-btn" data-tab="tab2"><span class="tab-num">2</span> AI Radar 2.0 Use-Case Prioritizer</button>
+    <button class="tab-btn" data-tab="tab3"><span class="tab-num">3</span> Partner Deal-Scoping &amp; SOW Guardrails</button>
+    <button class="tab-btn" data-tab="tab4"><span class="tab-num">4</span> Live MCP Protocol &amp; Glass Box Inspector</button>
+  </div>
+</nav>
+
+<!-- WORKSPACE CONTENT -->
+<main class="container">
+
+  <!-- ===================================================================== -->
+  <!-- TAB 1: UNIT ECONOMICS & TCO SIMULATOR                                 -->
+  <!-- ===================================================================== -->
+  <section id="tab1" class="tab-panel active">
+    <!-- Executive KPI Strip -->
+    <div class="kpi-grid">
+      <div class="kpi-card highlight">
+        <div class="kpi-label">Annual Net Savings</div>
+        <div class="kpi-val" id="kpiAnnualSavings">$0</div>
+        <div class="kpi-foot" id="kpiMonthlySavings">$0 / mo vs. baseline</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">3-Year TCO vs. DIY LLM</div>
+        <div class="kpi-val" id="kpiDiyAdvantage" style="color: var(--accent-cyan);">$0</div>
+        <div class="kpi-foot">Saved vs. frontier token + glue tax</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Containment Lift</div>
+        <div class="kpi-val" id="kpiContainmentLift">+30%</div>
+        <div class="kpi-foot" id="kpiContainedCalls">0 calls automated/mo</div>
+      </div>
+      <div class="kpi-card highlight">
+        <div class="kpi-label">Days / Mo per Agent Saved</div>
+        <div class="kpi-val" id="kpiAgentDaysSaved">0.0 days</div>
+        <div class="kpi-foot" id="kpiAgentHoursSaved">0 hrs/mo reclaimed capacity</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Equivalent FTEs Freed</div>
+        <div class="kpi-val" id="kpiFtesFreed" style="color: var(--accent-emerald);">0 FTEs</div>
+        <div class="kpi-foot" id="kpiEffectiveCostPerCall">Loaded human cost: $0.00/call</div>
+      </div>
+    </div>
+
+    <div class="grid-12">
+      <!-- Left Controls Column -->
+      <div class="col-5">
+        <!-- Volume & Containment Card -->
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-header">
+            <div class="card-title">Contact Center Volume &amp; Surge Profile</div>
+            <span class="tag tag-teal" id="t1VerticalTag">Banking</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row">
+              <span>Monthly Inbound Call Volume</span>
+              <span class="val-badge" id="valCallVolume">450,000</span>
+            </div>
+            <input type="range" id="inpCallVolume" min="50000" max="2000000" step="10000" value="450000">
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row">
+              <span>Baseline Legacy IVR Containment</span>
+              <span class="val-badge" id="valBaseContainment">28%</span>
+            </div>
+            <input type="range" id="inpBaseContainment" min="5" max="50" step="1" value="28">
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row">
+              <span>Target Omilia OCP Containment</span>
+              <span class="val-badge" id="valTargetContainment">58%</span>
+            </div>
+            <input type="range" id="inpTargetContainment" min="25" max="85" step="1" value="58">
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row">
+              <span>Average Handle Time (AHT)</span>
+              <span class="val-badge" id="valAht">340s</span>
+            </div>
+            <input type="range" id="inpAht" min="120" max="720" step="10" value="340">
+          </div>
+
+          <div class="form-row" style="margin-bottom: 0;">
+            <div class="form-label-row">
+              <span>Seasonal / Outage Peak Surge Multiplier</span>
+              <span class="val-badge" id="valSurge" style="color: var(--accent-amber); background: var(--accent-amber-dim);">1.4x</span>
+            </div>
+            <input type="range" id="inpSurge" min="1.0" max="4.0" step="0.1" value="1.4">
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px;" id="surgeContextNote">
+              Models nonlinear frontier LLM token burn &amp; multi-turn retries during peak spikes vs. Omilia flat outcome pricing ($0.40/resolved).
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent Cost Shaping & CoPilot/TalkGuard Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Agent Cost-per-Call Shaping &amp; AI Assist</div>
+            <button class="btn btn-sm" id="btnAutoFitFte" title="Size active agents to residual uncontained volume">Auto-Fit FTEs</button>
+          </div>
+
+          <div class="preset-group">
+            <button class="btn btn-sm" data-wage="26" data-burden="32">Onshore ($26/hr)</button>
+            <button class="btn btn-sm" data-wage="16" data-burden="26">Nearshore ($16/hr)</button>
+            <button class="btn btn-sm" data-wage="10" data-burden="22">Offshore ($10/hr)</button>
+          </div>
+
+          <div class="input-grid-2" style="margin-bottom: 12px;">
+            <div>
+              <div class="form-label-row"><span>Base Wage ($/hr)</span></div>
+              <input type="number" id="inpWage" value="26" min="5" max="120" step="1">
+            </div>
+            <div>
+              <div class="form-label-row"><span>Burden / Overhead (%)</span></div>
+              <input type="number" id="inpBurden" value="32" min="0" max="100" step="1">
+            </div>
+            <div>
+              <div class="form-label-row"><span>Occupancy (%)</span></div>
+              <input type="number" id="inpOccupancy" value="82" min="40" max="98" step="1">
+            </div>
+            <div>
+              <div class="form-label-row"><span>After-Call Work (ACW s)</span></div>
+              <input type="number" id="inpAcw" value="45" min="0" max="240" step="5">
+            </div>
+          </div>
+
+          <!-- CFO Direct Override -->
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <strong>Direct CFO Cost-per-Call Override</strong>
+              <span>Bypass bottom-up labor math with finance-approved unit cost</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="number" id="inpCfoOverrideVal" value="4.25" min="0.50" max="50" step="0.05" style="width: 78px;" disabled>
+              <label class="switch">
+                <input type="checkbox" id="chkCfoOverride">
+                <span class="slider-switch"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- TalkGuard Toggle -->
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <strong>TalkGuard Passive Voice Biometrics</strong>
+              <span id="lblTalkguardDesc">Eliminates 45s KBA interrogation in ~6s natural speech</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkTalkguard" checked>
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+
+          <!-- CSR CoPilot Toggle -->
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <strong>CSR CoPilot Real-Time Agent Assist</strong>
+              <span id="lblCopilotDesc">Auto-summarizes escalated calls (-20s ACW reduction)</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkCopilot" checked>
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+
+          <!-- Workforce Shift Controls -->
+          <div class="input-grid-3" style="margin-top: 12px;">
+            <div>
+              <div class="form-label-row"><span>Active Agents</span></div>
+              <input type="number" id="inpAgents" value="680" min="10" max="25000" step="10">
+            </div>
+            <div>
+              <div class="form-label-row"><span>Shift Hrs/Day</span></div>
+              <input type="number" id="inpShiftHours" value="8" min="4" max="12" step="0.5">
+            </div>
+            <div>
+              <div class="form-label-row"><span>Work Days/Mo</span></div>
+              <input type="number" id="inpWorkDays" value="21.5" min="15" max="26" step="0.5">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Visualizations & Breakdown Column -->
+      <div class="col-7">
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Annualized TCO Comparison: Human Baseline vs. DIY Frontier LLM vs. Omilia OCP</div>
+              <div class="card-subtitle">Includes peak surge multiplier, API orchestration tax, and residual human escalation labor</div>
+            </div>
+            <span class="tag tag-emerald">Outcome-Based Pricing ($0.40/res)</span>
+          </div>
+
+          <div id="tcoSvgChart" style="width: 100%; overflow-x: auto;"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">CFO Financial &amp; Operational Impact Breakdown</div>
+            <span class="card-subtitle" id="lblBlendedModelNote">Vertically Integrated Speech-to-Speech Stack</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Cost &amp; Operational Dimension</th>
+                <th>Legacy Baseline</th>
+                <th>DIY Frontier LLM Stack</th>
+                <th>Omilia OCP Platform</th>
+              </tr>
+            </thead>
+            <tbody id="tcoComparisonTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 2: AI RADAR 2.0 USE-CASE PRIORITIZER                              -->
+  <!-- ===================================================================== -->
+  <section id="tab2" class="tab-panel">
+    <div class="grid-12">
+      <!-- Left 2x2 Matrix -->
+      <div class="col-7">
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">AI Radar 2.0: Feasibility &amp; Data Maturity vs. Strategic Impact</div>
+              <div class="card-subtitle">Click any plotted use case pin to inspect runtime tier, Day-1 accuracy path, and HITL governance</div>
+            </div>
+            <span class="tag tag-teal" id="t2VerticalTag">Banking &amp; Financial Services</span>
+          </div>
+
+          <div class="radar-wrap">
+            <svg id="radarSvg" viewBox="0 0 680 460" style="width: 100%; height: auto; display: block;"></svg>
+          </div>
+        </div>
+
+        <!-- Custom Use Case Builder -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Plot Custom Prospect Use Case Live</div>
+            <span class="card-subtitle">Add client-specific call drivers during discovery</span>
+          </div>
+          <div class="input-grid-3" style="align-items: end;">
+            <div>
+              <div class="form-label-row"><span>Use Case Name</span></div>
+              <input type="text" id="inpCustomUcName" placeholder="e.g., Smart Meter Outage Callback">
+            </div>
+            <div>
+              <div class="form-label-row"><span>Feasibility (0–100)</span></div>
+              <input type="number" id="inpCustomUcFeas" value="78" min="5" max="99">
+            </div>
+            <div style="display:flex; gap:8px;">
+              <div style="flex:1;">
+                <div class="form-label-row"><span>Impact (0–100)</span></div>
+                <input type="number" id="inpCustomUcImp" value="84" min="5" max="99">
+              </div>
+              <button class="btn btn-primary" id="btnAddCustomUc" style="height: 33px; align-self: flex-end;">+ Plot</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Inspector Panel -->
+      <div class="col-5">
+        <div class="card" style="margin-bottom: 18px;" id="ucInspectorCard">
+          <div class="card-header">
+            <div class="card-title">Runtime &amp; Rollout Inspector</div>
+            <span class="tag tag-teal" id="inspQuadrantTag">Immediate Funding</span>
+          </div>
+          <h3 id="inspUcTitle" style="font-size: 17px; margin-bottom: 6px; color: var(--text-primary);">Select a Use Case</h3>
+          <p id="inspUcDesc" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;"></p>
+
+          <div class="input-grid-2" style="margin-bottom: 14px;">
+            <div style="background: var(--bg-input); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary);">Feasibility / Data Score</div>
+              <div style="font-size: 18px; font-weight: 800; color: var(--accent-cyan);" id="inspFeasScore">92 / 100</div>
+            </div>
+            <div style="background: var(--bg-input); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary);">Financial / CX Impact</div>
+              <div style="font-size: 18px; font-weight: 800; color: var(--accent-emerald);" id="inspImpScore">85 / 100</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-teal); margin-bottom: 4px;">Recommended Omilia Runtime Tier</div>
+            <div style="font-size: 13px; font-weight: 600; background: var(--bg-input); padding: 9px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="inspRuntimeTier"></div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 4px;">Phased "Training Wheels" Rollout Plan</div>
+            <div style="font-size: 12.5px; color: var(--text-secondary); background: var(--bg-input); padding: 9px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="inspRolloutPlan"></div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-amber); margin-bottom: 4px;">Glass Box &amp; HITL Governance Gate</div>
+            <div style="font-size: 12.5px; color: var(--text-secondary); background: var(--bg-input); padding: 9px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);" id="inspGovernance"></div>
+          </div>
+        </div>
+
+        <!-- Use Case Quick List -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Vertical Use-Case Portfolio</div>
+            <span class="card-subtitle" id="ucCountLabel">7 intents</span>
+          </div>
+          <div id="ucListContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 270px; overflow-y: auto;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 3: PARTNER DEAL-SCOPING & SOW GUARDRAILS                          -->
+  <!-- ===================================================================== -->
+  <section id="tab3" class="tab-panel">
+    <div class="grid-12">
+      <!-- Left Scoping Configuration -->
+      <div class="col-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Partner &amp; Architecture Scoping Inputs</div>
+            <span class="tag tag-teal" id="t3VerticalTag">Banking</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row"><span>Partner GTM Motion</span></div>
+            <select id="selPartnerMotion" class="input-select">
+              <option value="ccaas">CCaaS Co-Sell (Genesys Cloud / NICE CXone / AWS Connect)</option>
+              <option value="gsi">Global Systems Integrator (Accenture / Deloitte / Cognizant)</option>
+              <option value="bpo">BPO Managed CX (Teleperformance / Concentrix)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row"><span>Deployment Sovereignty Tier</span></div>
+            <select id="selSovereignty" class="input-select">
+              <option value="saas">OCP SaaS (Managed AWS Certified Walled Garden)</option>
+              <option value="baremetal">OCP Bare Metal (On-Premise / Air-Gapped Data Center)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row">
+              <span>Phase 1 Bounded Intents (80/20 Rule)</span>
+              <span class="val-badge" id="valIntentCount">4 Intents</span>
+            </div>
+            <input type="range" id="inpIntentCount" min="1" max="8" step="1" value="4">
+          </div>
+
+          <div class="form-row">
+            <div class="form-label-row"><span>Backend API &amp; Middleware Readiness</span></div>
+            <select id="selApiReadiness" class="input-select">
+              <option value="modern">Modern REST / GraphQL / MCP-Ready</option>
+              <option value="mixed">Mixed REST + Legacy SOAP Endpoints</option>
+              <option value="mainframe">Legacy Mainframe (z/OS CICS / MQ / 3270 Screens)</option>
+            </select>
+          </div>
+
+          <!-- Vertical Compliance & Backend Prerequisites -->
+          <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-teal); margin-bottom: 6px;">
+              Vertical Compliance &amp; Regulatory Perimeter
+            </div>
+            <div id="scopingComplianceBadges" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;"></div>
+
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 4px;">
+              Target Core Systems &amp; Middleware
+            </div>
+            <div id="scopingBackendStack" style="font-size: 12px; color: var(--text-secondary);"></div>
+          </div>
+
+          <div style="display: flex; gap: 10px;" class="no-print">
+            <button class="btn btn-primary" id="btnCopyBrief" style="flex: 1;">Copy Executive Deal Brief</button>
+            <button class="btn" id="btnPrintBrief">Print / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right HLEE, RACI & SOW Guardrails Output -->
+      <div class="col-7">
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">HLEE Effort Estimate &amp; Co-Sell Positioning</div>
+              <div class="card-subtitle" id="scopingPositioningHook"></div>
+            </div>
+            <span class="tag tag-emerald" id="hleeTimelineBadge">4–6 Weeks Phase 1</span>
+          </div>
+
+          <div class="input-grid-3" style="margin-bottom: 14px;">
+            <div style="background: var(--bg-input); padding: 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary);">Est. Phase 1 Timeline</div>
+              <div style="font-size: 19px; font-weight: 800; color: var(--accent-teal);" id="hleeWeeksVal">5 Weeks</div>
+            </div>
+            <div style="background: var(--bg-input); padding: 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary);">Omilia PS Effort</div>
+              <div style="font-size: 19px; font-weight: 800; color: var(--text-primary);" id="hleeDaysVal">18 Days</div>
+            </div>
+            <div style="background: var(--bg-input); padding: 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary);">Day-1 NLU Target</div>
+              <div style="font-size: 19px; font-weight: 800; color: var(--accent-emerald);">95%+ Accuracy</div>
+            </div>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--accent-amber); margin-bottom: 8px;">
+            Mandatory SOW &amp; Margin Protection Guardrails
+          </div>
+          <ul id="sowGuardrailsList" style="padding-left: 18px; font-size: 12.5px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;"></ul>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Partner vs. Omilia RACI Responsibility Matrix</div>
+            <span class="card-subtitle">Clear delivery boundaries to prevent scope creep</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Workstream / Deliverable</th>
+                <th>Omilia Role</th>
+                <th>Partner / Client Role</th>
+              </tr>
+            </thead>
+            <tbody id="raciTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- TAB 4: LIVE MCP PROTOCOL & GLASS BOX INSPECTOR                        -->
+  <!-- ===================================================================== -->
+  <section id="tab4" class="tab-panel">
+    <div class="grid-12">
+      <!-- Left MCP Controls & Waterfall -->
+      <div class="col-6">
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">MCP Client Orchestration &amp; Transport</div>
+              <div class="card-subtitle">OCP acts as MCP Client calling customer-hosted MCP servers</div>
+            </div>
+            <button class="btn btn-sm" id="btnOpenTsModal">View / Download TypeScript MCP Server</button>
+          </div>
+
+          <!-- Transport Mode Toggle -->
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <strong>Localhost HTTP Bridge (<code>http://localhost:3333/mcp</code>)</strong>
+              <span id="mcpTransportStatus">Currently using Embedded JSON-RPC 2.0 Runtime (Offline Ready)</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkLocalhostBridge">
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+            <button class="btn" id="btnMcpToolsList">1. Execute <code>tools/list</code></button>
+            <button class="btn btn-primary" id="btnMcpParallel">2. Run Parallel Async Dispatch (&lt;300ms)</button>
+            <button class="btn" id="btnMcpArchFit">3. Check Architecture Fit</button>
+            <button class="btn" id="btnMcpSowTool">4. Generate SOW Guardrails</button>
+          </div>
+
+          <!-- Sub-300ms Latency Waterfall Visualization -->
+          <div class="waterfall-bar-wrap">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+              <strong style="font-size: 12.5px; color: var(--text-primary);">Voice Latency Budget Waterfall (1,200ms Caller Hang-Up Threshold)</strong>
+              <span class="tag tag-emerald" id="wfVerticalBadge">Banking Stack</span>
+            </div>
+
+            <div class="wf-row">
+              <div class="wf-meta">
+                <span style="color: var(--accent-rose); font-weight: 600;">Competitor DIY Sequential LLM + API Chaining</span>
+                <span style="font-family: var(--font-mono); color: var(--accent-rose); font-weight: 700;" id="wfSeqTotal">1,485 ms (Dead Air Risk)</span>
+              </div>
+              <div class="wf-track" id="wfSeqTrack"></div>
+            </div>
+
+            <div class="wf-row">
+              <div class="wf-meta">
+                <span style="color: var(--accent-teal); font-weight: 600;">Omilia OCP Parallel Async MCP + Lexis TTS (&lt;45ms)</span>
+                <span style="font-family: var(--font-mono); color: var(--accent-emerald); font-weight: 700;" id="wfOmiliaTotal">285 ms (&lt;300ms SLA)</span>
+              </div>
+              <div class="wf-track" id="wfOmiliaTrack"></div>
+            </div>
+
+            <div id="wfLegend" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 11px; color: var(--text-secondary);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Glass Box JSON-RPC 2.0 Wire Trace -->
+      <div class="col-6">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Glass Box JSON-RPC 2.0 Audit Wire Trace</div>
+              <div class="card-subtitle">Schema-validated, RBAC-scoped, zero third-party LLM egress</div>
+            </div>
+            <span class="tag tag-emerald">ZERO FRONTIER EGRESS</span>
+          </div>
+
+          <div style="margin-bottom: 10px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 4px;">
+              Outbound MCP Request (OCP Client &rarr; Customer MCP Server)
+            </div>
+            <pre class="code-console" id="mcpReqTrace"></pre>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent-emerald); margin-bottom: 4px;">
+              Inbound MCP Response &amp; Governance Audit Metadata
+            </div>
+            <pre class="code-console" id="mcpResTrace"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- TYPESCRIPT MCP SERVER MODAL -->
+<div class="modal-backdrop" id="tsModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <strong style="font-size: 14px;">Local TypeScript MCP Server (<code>omilia-partner-mcp</code>)</strong>
+        <span style="display:block; font-size: 11px; color: var(--text-secondary);">Supports both <code>stdio</code> (Gemini CLI / Antigravity) and Streamable HTTP on port 3333</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-sm btn-primary" id="btnDownloadTsFile">Download Active File</button>
+        <button class="btn btn-sm" id="btnCloseTsModal">Close</button>
+      </div>
+    </div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-file="index">src/index.ts</button>
+      <button class="modal-tab" data-file="package">package.json</button>
+      <button class="modal-tab" data-file="tsconfig">tsconfig.json</button>
+    </div>
+    <div class="modal-body">
+      <pre class="code-console" id="tsModalCode" style="max-height: 55vh;"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toastEl">
+  <span class="dot-pulse"></span>
+  <span id="toastText">Switched Vertical</span>
+</div>
+
+<script>
+// ============================================================================
+// 1. MULTI-VERTICAL ENTERPRISE DATASET (5 CORE VERTICALS)
+// ============================================================================
+const VERTICAL_PRESETS = {
+  banking: {
+    name: "Banking & Financial Services",
+    shortName: "Banking",
+    compliance: ["PCI DSS Level 1", "SOC 2 Type II", "ISO 27001", "GDPR", "DORA Ready"],
+    backendStack: "IBM z/OS Connect (CICS / Db2), Core Banking Ledger (Temenos / FIS), TalkGuard Voice Biometrics, Salesforce Financial Services Cloud",
+    roi: {
+      callVolume: 450000,
+      baseContainment: 28,
+      targetContainment: 58,
+      aht: 340,
+      surge: 1.4,
+      talkguardSec: 45,
+      copilotSec: 20,
+      wage: 26,
+      burden: 32,
+      occupancy: 82,
+      acw: 45,
+      surgeNote: "Models fraud-event and month-end statement spikes (1.4x) vs. Omilia flat outcome pricing ($0.40/resolved)."
+    },
+    mcpSystems: [
+      { name: "Core Banking Ledger (z/OS REST)", ms: 215, color: "#14b8a6" },
+      { name: "TalkGuard Passive Biometrics", ms: 140, color: "#38bdf8" },
+      { name: "Salesforce Financial Cloud", ms: 240, color: "#818cf8" }
+    ],
+    useCases: [
+      {
+        name: "Card Activation & PIN Reset",
+        feas: 92, imp: 85,
+        desc: "Instant debit/credit card activation and PCI-compliant PIN reset using 98% accurate numeric capture.",
+        runtime: "Deterministic miniApps® + AI Bootstrapping",
+        rollout: "Week 1–2: Ingest existing IVR call logs & card processor OpenAPI spec for 95%+ Day-1 accuracy.",
+        gov: "PCI-DSS DTMF/voice masking; zero sensitive card digits logged in plaintext."
+      },
+      {
+        name: "Account Balance & Recent Transactions",
+        feas: 95, imp: 82,
+        desc: "Natural-language multi-account balance inquiry, pending authorization checks, and statement dates.",
+        runtime: "Deterministic miniApps® (Out-of-the-Box Banking Template)",
+        rollout: "Week 1–3: Connect read-only Core Banking API via parallel MCP lookup (<220ms).",
+        gov: "RBAC-scoped OAuth2 token bound to authenticated session identity."
+      },
+      {
+        name: "Passive Voice Biometric Auth (TalkGuard)",
+        feas: 88, imp: 90,
+        desc: "4-layer anti-fraud screening (ANI spoofing, liveness/deepfake detection, blocklist, behavioral probing) in ~6s.",
+        runtime: "Native TalkGuard Security Agent",
+        rollout: "Week 1–2: Passive background enrollment & verification without KBA interrogation.",
+        gov: "Eliminates 45s of KBA questions while blocking synthetic voice cloning attacks."
+      },
+      {
+        name: "Fraud Alert Confirmation & Card Reissue",
+        feas: 68, imp: 92,
+        desc: "Outbound/inbound suspicious transaction verification, immediate card freeze, and replacement dispatch.",
+        runtime: "Blended Deterministic Flow + Agentic Fallback",
+        rollout: "Week 3–5: Deterministic transaction confirmation paired with agentic handling of travel notices.",
+        gov: "Full Glass Box audit attribution for every card status mutation."
+      },
+      {
+        name: "Wire Transfer & Multi-Account Dispute Investigation",
+        feas: 38, imp: 88,
+        desc: "Cross-system Reg-E dispute intake and high-value wire status investigation across legacy CICS/MQ.",
+        runtime: "Autonomous Task Agent + Human-in-the-Loop (HITL)",
+        rollout: "Phase 2 ('Training Wheels'): Stage dispute packet autonomously; require agent/supervisor approval before provisional credit.",
+        gov: "Mandatory HITL approval gate & mainframe latency isolation."
+      },
+      {
+        name: "Branch Hours, Routing Numbers & SWIFT Codes",
+        feas: 90, imp: 35,
+        desc: "Instant answers to branch locations, wire routing instructions, and fee schedules.",
+        runtime: "OCP Knowledge Engine (Voice-Safe RAG)",
+        rollout: "Week 1 Quick-Win: Ingest public bank PDFs & branch directory with confidence thresholds.",
+        gov: "Strict grounding; escalates if confidence score drops below threshold."
+      },
+      {
+        name: "Legacy Mainframe Loan Modification",
+        feas: 28, imp: 62,
+        desc: "Complex mortgage forbearance restructuring tied to green-screen 3270 mainframe workflows.",
+        runtime: "Defer to Phase 2/3 (Pending z/OS Connect API Facade)",
+        rollout: "Defer until customer mainframe team exposes REST/MCP facade via IBM z/OS Connect.",
+        gov: "Excluded from Phase 1 SOW to protect PS margins and sub-300ms voice SLA."
+      }
+    ]
+  },
+
+  utilities: {
+    name: "Energy & Utilities",
+    shortName: "Utilities",
+    compliance: ["NERC CIP", "Ofgem / PUC Regulatory", "ISO 27001", "PCI DSS Level 1", "GDPR"],
+    backendStack: "SAP IS-U / Oracle CC&B Billing, Outage Management System (OMS / GIS), Smart Meter AMI Telemetry, Field Crew Dispatch",
+    roi: {
+      callVolume: 380000,
+      baseContainment: 25,
+      targetContainment: 56,
+      aht: 310,
+      surge: 3.2,
+      talkguardSec: 35,
+      copilotSec: 18,
+      wage: 24,
+      burden: 30,
+      occupancy: 84,
+      acw: 40,
+      surgeNote: "Models severe storm & winter freeze call surges (3.2x spike) where frontier LLM token bills explode vs. Omilia flat outcome pricing."
+    },
+    mcpSystems: [
+      { name: "Outage Management GIS (OMS)", ms: 190, color: "#14b8a6" },
+      { name: "Smart Meter Telemetry (AMI)", ms: 165, color: "#38bdf8" },
+      { name: "SAP IS-U / Oracle CC&B", ms: 245, color: "#818cf8" }
+    ],
+    useCases: [
+      {
+        name: "Automated Meter Reading & Balance Check",
+        feas: 94, imp: 84,
+        desc: "High-accuracy gas/electric meter digit capture (98% alphanumeric accuracy) and real-time bill balance.",
+        runtime: "Deterministic miniApps® + AI Bootstrapping",
+        rollout: "Week 1–2: Deploy pre-trained utility numeric capture & SAP IS-U balance lookup.",
+        gov: "Deterministic validation prevents misbilled meter read submissions."
+      },
+      {
+        name: "Outage Reporting & Restoration ETA",
+        feas: 88, imp: 94,
+        desc: "Automated premise lookup via ANI/postcode, smart-meter ping, outage ticket logging, and live crew ETR.",
+        runtime: "Blended Deterministic + Parallel OMS/AMI Dispatch",
+        rollout: "Week 2–4: Parallel query across OMS GIS and Smart Meter AMI (<250ms) to deflect storm call spikes.",
+        gov: "Handles 3x–4x severe weather concurrency with zero token surge penalty."
+      },
+      {
+        name: "Direct Debit & Payment Plan Setup",
+        feas: 85, imp: 80,
+        desc: "Self-service bill payment, budget-billing enrollment, and automated installment arrangements.",
+        runtime: "Deterministic miniApps® (PCI-DSS Enforced)",
+        rollout: "Week 2–4: Connect payment gateway and SAP billing rules for compliant arrears arrangements.",
+        gov: "PCI-DSS Level 1 card capture + regulatory affordability rule checks."
+      },
+      {
+        name: "Smart Tariff Switch & EV Rate Advisor",
+        feas: 65, imp: 86,
+        desc: "Personalized time-of-use and EV charging tariff comparison grounded in 12-month usage history.",
+        runtime: "OCP Knowledge Engine (RAG) + Task Agent",
+        rollout: "Week 4–6: Ground tariff rules in approved regulatory rate cards before executing switch.",
+        gov: "Mandatory disclosure playback and confirmation gate before contract change."
+      },
+      {
+        name: "Complex Billing Dispute & Vulnerable Customer Flagging",
+        feas: 40, imp: 90,
+        desc: "Estimated-bill reconciliation and Priority Services Register (medical/vulnerable household) flagging.",
+        runtime: "Autonomous Task Agent + HITL Escalation",
+        rollout: "Phase 2 ('Training Wheels'): Automatically detect vulnerability cues & warm-transfer with full UUI context.",
+        gov: "Ofgem/PUC compliance audit trail + immediate priority queue routing."
+      },
+      {
+        name: "Move-In / Move-Out Multi-Meter Transfer",
+        feas: 34, imp: 82,
+        desc: "Closing final landlord/tenant accounts and opening multi-fuel supply at a new address.",
+        runtime: "Autonomous Task Agent (Phased Phase 2)",
+        rollout: "Phase 2: Orchestrate multi-step meter close/open across SAP IS-U with supervisor QA review.",
+        gov: "Human approval gate on deposit waivers and commercial meter transfers."
+      },
+      {
+        name: "Tariff FAQ & Streetlight Outage Reporting",
+        feas: 91, imp: 36,
+        desc: "Deflect general rate questions and municipal streetlight fault tickets.",
+        runtime: "OCP Knowledge Engine (Voice-Safe RAG)",
+        rollout: "Week 1 Quick-Win: Ingest tariff PDFs and municipal GIS lookup.",
+        gov: "Low-risk sandbox proving sub-second barge-in and accuracy."
+      }
+    ]
+  },
+
+  insurance: {
+    name: "Insurance (P&C / Health)",
+    shortName: "Insurance",
+    compliance: ["PCI DSS Level 1", "HIPAA & BAA", "NAIC Model Law", "SOC 2 Type II", "GDPR"],
+    backendStack: "Guidewire PolicyCenter & ClaimCenter, Duck Creek Claims, TalkGuard Fraud Scoring, Roadside Dispatch APIs",
+    roi: {
+      callVolume: 290000,
+      baseContainment: 22,
+      targetContainment: 52,
+      aht: 420,
+      surge: 2.4,
+      talkguardSec: 40,
+      copilotSec: 25,
+      wage: 27,
+      burden: 33,
+      occupancy: 80,
+      acw: 55,
+      surgeNote: "Models catastrophe (CAT) hail/hurricane FNOL claim surges (2.4x spike) vs. Omilia flat outcome pricing ($0.40/resolved)."
+    },
+    mcpSystems: [
+      { name: "Guidewire ClaimCenter", ms: 230, color: "#14b8a6" },
+      { name: "TalkGuard Fraud Scoring", ms: 145, color: "#38bdf8" },
+      { name: "PolicyCenter CRM", ms: 210, color: "#818cf8" }
+    ],
+    useCases: [
+      {
+        name: "Policy Document & Digital ID Card Request",
+        feas: 95, imp: 78,
+        desc: "Instant verification and SMS/email dispatch of auto proof-of-insurance cards and policy declarations.",
+        runtime: "Deterministic miniApps® + Omnichannel SMS/Chat",
+        rollout: "Week 1–2: Connect PolicyCenter lookup + automated SMS card delivery.",
+        gov: "Zero-egress PII protection; immediate deflection of high-frequency calls."
+      },
+      {
+        name: "Roadside Assistance Dispatch & GPS Pin",
+        feas: 86, imp: 90,
+        desc: "Multimodal voice + SMS geo-location capture to dispatch tow, battery, or lockout vendors in real time.",
+        runtime: "Blended Deterministic + Multimodal SMS Link",
+        rollout: "Week 2–4: Noise-hardened 8kHz ASR handles highway background noise cleanly.",
+        gov: "Real-time ETA updates pushed via SMS to reduce repeat status calls."
+      },
+      {
+        name: "Deductible & Coverage Inquiry",
+        feas: 82, imp: 76,
+        desc: "Policy-specific deductible, rental-car coverage, and glass repair benefit answers grounded in policy schedules.",
+        runtime: "OCP Knowledge Engine (Grounded RAG)",
+        rollout: "Week 2–3: Combine PolicyCenter coverage flags with grounded policy booklet RAG.",
+        gov: "Confidence thresholds prevent misquoting exclusions or coverage limits."
+      },
+      {
+        name: "First Notice of Loss (FNOL) Auto Claim Intake",
+        feas: 58, imp: 94,
+        desc: "Structured capture of accident date, location, vehicle damage, and police report details into Guidewire.",
+        runtime: "Blended Deterministic + Agentic Slot Recovery",
+        rollout: "Week 4–6: Collect structured FNOL slots and stage claim in Guidewire ClaimCenter.",
+        gov: "TalkGuard screens synthetic voice fraud; complex injury claims escalate immediately."
+      },
+      {
+        name: "Multi-Party Bodily Injury Claim Adjudication",
+        feas: 32, imp: 89,
+        desc: "Complex liability determination, medical lien review, and reserve adjustments across multiple carriers.",
+        runtime: "CSR CoPilot + HITL Licensed Adjuster Gate",
+        rollout: "Phase 2: Assist licensed adjusters with real-time summarization & compliance checklists.",
+        gov: "Strict regulatory requirement: licensed human adjuster makes all liability decisions."
+      },
+      {
+        name: "Renewal Quote & Endorsement Adjustment",
+        feas: 45, imp: 82,
+        desc: "Adding/removing vehicles or drivers and recalculating mid-term policy premiums.",
+        runtime: "Autonomous Task Agent + Underwriting Rules Gate",
+        rollout: "Phase 2: Run rating engine via MCP and require explicit policyholder binding confirmation.",
+        gov: "Full Glass Box audit log of every rating variable and disclosure."
+      },
+      {
+        name: "In-Network Repair Shop & Provider Lookup",
+        feas: 90, imp: 34,
+        desc: "ZIP-code lookup of preferred collision repair centers and direct-repair program shops.",
+        runtime: "Deterministic miniApps®",
+        rollout: "Week 1 Quick-Win: Ingest preferred shop directory API.",
+        gov: "Simple, deterministic, high-CSAT quick win."
+      }
+    ]
+  },
+
+  healthcare: {
+    name: "Healthcare & Payers",
+    shortName: "Healthcare",
+    compliance: ["HIPAA & Executed BAA", "HITRUST CSF", "SOC 2 Type II", "ISO 27001", "Zero PHI Egress"],
+    backendStack: "Epic / Oracle Cerner EHR (HL7 FHIR R4), Payer Eligibility & Claims (EDI 270/271), Pharmacy Benefit Manager (PBM) APIs",
+    roi: {
+      callVolume: 520000,
+      baseContainment: 24,
+      targetContainment: 54,
+      aht: 380,
+      surge: 1.9,
+      talkguardSec: 40,
+      copilotSec: 22,
+      wage: 25,
+      burden: 31,
+      occupancy: 83,
+      acw: 50,
+      surgeNote: "Models Annual Open Enrollment & seasonal flu surges (1.9x spike) inside a strict HIPAA zero-egress perimeter."
+    },
+    mcpSystems: [
+      { name: "Epic FHIR R4 Patient Record", ms: 220, color: "#14b8a6" },
+      { name: "Payer Eligibility (EDI 270/271)", ms: 185, color: "#38bdf8" },
+      { name: "Appointment Scheduling Engine", ms: 195, color: "#818cf8" }
+    ],
+    useCases: [
+      {
+        name: "Appointment Confirmation & Rescheduling",
+        feas: 94, imp: 86,
+        desc: "Natural-language clinic scheduling, rescheduling, and cancellation synced live with Epic/Cerner slots.",
+        runtime: "Deterministic miniApps® + HL7 FHIR R4",
+        rollout: "Week 1–3: Out-of-the-box healthcare scheduling template cuts no-shows by 20%+.",
+        gov: "HIPAA BAA covered; inline PHI redaction in logs."
+      },
+      {
+        name: "Prescription Refill & Pharmacy Routing",
+        feas: 90, imp: 84,
+        desc: "Automated maintenance medication refill requests and preferred pharmacy status checks.",
+        runtime: "Deterministic miniApps® + PBM Integration",
+        rollout: "Week 2–3: Validate DOB/ZIP + Rx number; route controlled substances to clinical staff.",
+        gov: "Deterministic clinical safety rules block unauthorized controlled-substance refills."
+      },
+      {
+        name: "Clinic Hours & Pre-Visit Prep Instructions",
+        feas: 95, imp: 42,
+        desc: "Fasting rules, imaging prep checklists, parking directions, and telehealth link troubleshooting.",
+        runtime: "OCP Knowledge Engine (Voice-Safe RAG)",
+        rollout: "Week 1 Quick-Win: Ingest hospital patient prep PDFs and clinic directories.",
+        gov: "Strictly grounded in clinician-approved patient education materials."
+      },
+      {
+        name: "Benefits, Deductible & Co-Pay Eligibility Check",
+        feas: 72, imp: 88,
+        desc: "Real-time member deductible progress, specialist co-pay, and in-network coverage verification.",
+        runtime: "Blended Deterministic + Parallel EDI 270/271 MCP",
+        rollout: "Week 3–5: Parallel lookup across payer eligibility & claims APIs (<250ms).",
+        gov: "Zero PHI sent to public frontier models; 100% sovereign perimeter."
+      },
+      {
+        name: "Prior Authorization Status & Payer Inquiry",
+        feas: 44, imp: 92,
+        desc: "Provider and member status checks on pending prior authorizations and missing clinical documentation.",
+        runtime: "Autonomous Task Agent + HITL Nurse Review",
+        rollout: "Phase 2 ('Training Wheels'): Automate status retrieval; route clinical peer-to-peer appeals to nurses.",
+        gov: "Full Glass Box audit attribution for payer compliance."
+      },
+      {
+        name: "Post-Discharge Symptom Triage & Nurse Escalation",
+        feas: 35, imp: 95,
+        desc: "Structured post-op follow-up outreach that detects red-flag symptoms and warm-transfers to triage RN.",
+        runtime: "Deterministic Clinical Protocol + Immediate RN Warm Transfer",
+        rollout: "Phase 2: Strictly scripted clinical red-flag triggers with zero generative improvisation.",
+        gov: "Zero hallucination tolerance; immediate UUI clinical summary screen-pop to RN."
+      },
+      {
+        name: "Medical Records Release Request",
+        feas: 62, imp: 55,
+        desc: "Identity-verified medical record request intake and portal download guidance.",
+        runtime: "Deterministic miniApps®",
+        rollout: "Week 3–4: Authenticate patient and trigger HIM workflow ticket.",
+        gov: "Strict HIPAA authorization logging."
+      }
+    ]
+  },
+
+  telecom: {
+    name: "Telecoms, Retail & Logistics",
+    shortName: "Telecom & Retail",
+    compliance: ["PCI DSS Level 1", "ISO 27001", "SOC 2 Type II", "GDPR / CCPA", "98% Alphanumeric SLA"],
+    backendStack: "Order Management / WMS (Manhattan / SAP), Telecom OSS/BSS & Network Diagnostics, Salesforce Service Cloud, Carrier Tracking APIs",
+    roi: {
+      callVolume: 600000,
+      baseContainment: 30,
+      targetContainment: 62,
+      aht: 290,
+      surge: 2.8,
+      talkguardSec: 30,
+      copilotSec: 15,
+      wage: 22,
+      burden: 28,
+      occupancy: 85,
+      acw: 35,
+      surgeNote: "Models Black Friday peak retail & fiber outage spikes (2.8x load) vs. Omilia flat outcome pricing ($0.40/resolved)."
+    },
+    mcpSystems: [
+      { name: "Order Management / WMS", ms: 175, color: "#14b8a6" },
+      { name: "Network & Router Diagnostics", ms: 225, color: "#38bdf8" },
+      { name: "Salesforce / Billing CRM", ms: 205, color: "#818cf8" }
+    ],
+    useCases: [
+      {
+        name: "Parcel Tracking & Delivery Redirection",
+        feas: 95, imp: 88,
+        desc: "98% accurate alphanumeric tracking ID capture (Purolator benchmark) with live hold-at-depot or reschedule.",
+        runtime: "Deterministic miniApps® (98% Alphanumeric Accuracy)",
+        rollout: "Week 1–2: Proven logistics template achieves 98% voice accuracy and 95% chat containment.",
+        gov: "Single-turn complex alphanumeric recognition eliminates caller frustration."
+      },
+      {
+        name: "Router Reboot & Line Outage Diagnostics",
+        feas: 88, imp: 91,
+        desc: "Automated line test, remote ONT/router reset, outage ETA check, and guided LED troubleshooting.",
+        runtime: "Blended Deterministic + Parallel OSS Diagnostics",
+        rollout: "Week 2–4: Run line diagnostics while greeting caller; deflects 65%+ of tier-1 tech support calls.",
+        gov: "Passes full diagnostic telemetry to tier-2 agent if hardware fault detected."
+      },
+      {
+        name: "Return Merchandise Authorization (RMA) & Refund Status",
+        feas: 91, imp: 80,
+        desc: "Instant return eligibility check, QR return label SMS dispatch, and refund processing status.",
+        runtime: "Deterministic miniApps® + Omnichannel SMS",
+        rollout: "Week 1–3: Connect OMS return rules and automated QR label generation.",
+        gov: "Fraud velocity rules flag repeat returners for human review."
+      },
+      {
+        name: "Plan Upgrade & International Roaming Add-On",
+        feas: 76, imp: 84,
+        desc: "Personalized mobile/fiber tier upgrade and instant travel roaming pass activation.",
+        runtime: "Blended Deterministic + Agentic Upsell",
+        rollout: "Week 3–5: Check usage profile via CRM and activate roaming bundle with explicit price confirmation.",
+        gov: "Mandatory spoken confirmation of recurring charges before BSS provisioning."
+      },
+      {
+        name: "Billing Overcharge & Multi-Line Dispute",
+        feas: 42, imp: 89,
+        desc: "Itemized invoice variance analysis and prorated credit calculation across family/business lines.",
+        runtime: "Autonomous Task Agent + HITL Credit Threshold",
+        rollout: "Phase 2 ('Training Wheels'): Auto-apply credits under $25; escalate higher disputes with itemized breakdown.",
+        gov: "RBAC credit-limit guardrails prevent unauthorized revenue leakage."
+      },
+      {
+        name: "Fiber Installation Reschedule & Field Dispatch",
+        feas: 55, imp: 78,
+        desc: "Real-time technician appointment window rescheduling synced with field workforce dispatch.",
+        runtime: "Autonomous Task Agent via MCP",
+        rollout: "Week 4–6: Expose field dispatch slot API as typed MCP tool.",
+        gov: "SMS confirmation sent immediately upon slot lock."
+      },
+      {
+        name: "Store Hours, Curbside Pickup & Stock Check",
+        feas: 93, imp: 38,
+        desc: "Local store inventory availability, hours, and curbside pickup check-in.",
+        runtime: "OCP Knowledge Engine (Voice-Safe RAG)",
+        rollout: "Week 1 Quick-Win: Connect store locator & inventory feed.",
+        gov: "Fastest time-to-value pilot for retail stakeholders."
+      }
+    ]
+  }
+};
+
+// ============================================================================
+// 2. STATE & INITIALIZATION
+// ============================================================================
+let state = {
+  vertical: "banking",
+  selectedUcIndex: 0,
+  customUseCases: {
+    banking: [],
+    utilities: [],
+    insurance: [],
+    healthcare: [],
+    telecom: []
+  },
+  activeModalFile: "index"
+};
+
+function showToast(msg) {
+  const el = document.getElementById("toastEl");
+  document.getElementById("toastText").textContent = msg;
+  el.classList.add("show");
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+// Tab Navigation
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+// Central Vertical Preset Switcher
+function applyVerticalPreset(verticalKey, silent = false) {
+  state.vertical = verticalKey;
+  state.selectedUcIndex = 0;
+  const preset = VERTICAL_PRESETS[verticalKey];
+
+  // Header & Section Tags
+  document.getElementById("headerCompliancePill").textContent = preset.compliance.slice(0, 3).join(" • ");
+  document.getElementById("t1VerticalTag").textContent = preset.shortName;
+  document.getElementById("t2VerticalTag").textContent = preset.name;
+  document.getElementById("t3VerticalTag").textContent = preset.shortName;
+  document.getElementById("wfVerticalBadge").textContent = `${preset.shortName} Stack`;
+
+  // Tab 1 Inputs
+  const r = preset.roi;
+  document.getElementById("inpCallVolume").value = r.callVolume;
+  document.getElementById("inpBaseContainment").value = r.baseContainment;
+  document.getElementById("inpTargetContainment").value = r.targetContainment;
+  document.getElementById("inpAht").value = r.aht;
+  document.getElementById("inpSurge").value = r.surge;
+  document.getElementById("inpWage").value = r.wage;
+  document.getElementById("inpBurden").value = r.burden;
+  document.getElementById("inpOccupancy").value = r.occupancy;
+  document.getElementById("inpAcw").value = r.acw;
+  document.getElementById("surgeContextNote").textContent = r.surgeNote;
+  document.getElementById("lblTalkguardDesc").textContent = `Eliminates ${r.talkguardSec}s KBA interrogation in ~6s natural speech`;
+  document.getElementById("lblCopilotDesc").textContent = `Auto-summarizes escalated calls (-${r.copilotSec}s ACW reduction)`;
+
+  autoFitFtes(false);
+  recalcTab1();
+
+  // Tab 2 Radar & Use Cases
+  renderRadar();
+  selectUseCase(0);
+
+  // Tab 3 Scoping & Guardrails
+  recalcTab3();
+
+  // Tab 4 MCP Waterfall & Trace
+  runMcpAction("parallel");
+
+  if (!silent) {
+    showToast(`Switched workbench to ${preset.name}`);
+  }
+}
+
+document.getElementById("verticalSelect").addEventListener("change", (e) => {
+  applyVerticalPreset(e.target.value, false);
+});
+
+// ============================================================================
+// 3. TAB 1: UNIT ECONOMICS & TCO ENGINE
+// ============================================================================
+function getEffectiveUnitAgentCost() {
+  const cfoOverride = document.getElementById("chkCfoOverride").checked;
+  if (cfoOverride) {
+    return parseFloat(document.getElementById("inpCfoOverrideVal").value) || 4.25;
+  }
+  const wage = parseFloat(document.getElementById("inpWage").value) || 26;
+  const burden = (parseFloat(document.getElementById("inpBurden").value) || 32) / 100;
+  const occupancy = Math.max(0.3, (parseFloat(document.getElementById("inpOccupancy").value) || 82) / 100);
+  const aht = parseFloat(document.getElementById("inpAht").value) || 340;
+  const acw = parseFloat(document.getElementById("inpAcw").value) || 45;
+
+  const loadedHourly = wage * (1 + burden);
+  const productiveHourly = loadedHourly * occupancy;
+  const totalHandleHours = (aht + acw) / 3600;
+  return productiveHourly * totalHandleHours;
+}
+
+function autoFitFtes(notify = true) {
+  const vol = parseFloat(document.getElementById("inpCallVolume").value) || 450000;
+  const baseCont = (parseFloat(document.getElementById("inpBaseContainment").value) || 28) / 100;
+  const aht = parseFloat(document.getElementById("inpAht").value) || 340;
+  const acw = parseFloat(document.getElementById("inpAcw").value) || 45;
+  const occ = Math.max(0.3, (parseFloat(document.getElementById("inpOccupancy").value) || 82) / 100);
+  const shiftHrs = parseFloat(document.getElementById("inpShiftHours").value) || 8;
+  const workDays = parseFloat(document.getElementById("inpWorkDays").value) || 21.5;
+
+  const residualCalls = vol * (1 - baseCont);
+  const requiredProductiveHours = (residualCalls * (aht + acw)) / 3600;
+  const hoursPerAgentMonth = shiftHrs * workDays * occ;
+  const fittedAgents = Math.max(10, Math.round(requiredProductiveHours / hoursPerAgentMonth));
+  document.getElementById("inpAgents").value = fittedAgents;
+  if (notify) {
+    recalcTab1();
+    showToast(`Auto-fitted workforce to ${fittedAgents.toLocaleString()} active agents`);
+  }
+}
+
+function recalcTab1() {
+  const preset = VERTICAL_PRESETS[state.vertical];
+  const baseVol = parseFloat(document.getElementById("inpCallVolume").value);
+  const baseCont = parseFloat(document.getElementById("inpBaseContainment").value) / 100;
+  const targetCont = Math.max(baseCont + 0.05, parseFloat(document.getElementById("inpTargetContainment").value) / 100);
+  const aht = parseFloat(document.getElementById("inpAht").value);
+  const acw = parseFloat(document.getElementById("inpAcw").value);
+  const surge = parseFloat(document.getElementById("inpSurge").value);
+  const talkguardOn = document.getElementById("chkTalkguard").checked;
+  const copilotOn = document.getElementById("chkCopilot").checked;
+  const agents = Math.max(1, parseFloat(document.getElementById("inpAgents").value) || 500);
+  const shiftHours = Math.max(1, parseFloat(document.getElementById("inpShiftHours").value) || 8);
+
+  // Update badges
+  document.getElementById("valCallVolume").textContent = baseVol.toLocaleString();
+  document.getElementById("valBaseContainment").textContent = Math.round(baseCont * 100) + "%";
+  document.getElementById("valTargetContainment").textContent = Math.round(targetCont * 100) + "%";
+  document.getElementById("valAht").textContent = aht + "s";
+  document.getElementById("valSurge").textContent = surge.toFixed(1) + "x";
+
+  const unitHumanCost = getEffectiveUnitAgentCost();
+  const effectiveMonthlyCalls = baseVol * surge;
+
+  // 1. Legacy Baseline Monthly Cost
+  const legacyHumanCalls = effectiveMonthlyCalls * (1 - baseCont);
+  const legacyIvrCalls = effectiveMonthlyCalls * baseCont;
+  const legacyMonthlyCost = (legacyHumanCalls * unitHumanCost) + (legacyIvrCalls * 0.14);
+
+  // 2. Omilia OCP Monthly Cost
+  const omiliaAutomatedCalls = effectiveMonthlyCalls * targetCont;
+  const omiliaEscalatedCalls = effectiveMonthlyCalls * (1 - targetCont);
+  const tgSecSaved = talkguardOn ? preset.roi.talkguardSec : 0;
+  const cpSecSaved = copilotOn ? preset.roi.copilotSec : 0;
+  const totalHandleSec = Math.max(60, aht + acw);
+  const assistedTimeRatio = Math.max(0.55, (totalHandleSec - tgSecSaved - cpSecSaved) / totalHandleSec);
+  const omiliaEscalatedUnitCost = unitHumanCost * assistedTimeRatio;
+  const omiliaOutcomeRate = 0.40; // Flat $0.40 per resolved interaction
+  const omiliaMonthlyCost = (omiliaAutomatedCalls * omiliaOutcomeRate) + (omiliaEscalatedCalls * omiliaEscalatedUnitCost) + 6500;
+
+  // 3. DIY Frontier LLM Stack Monthly Cost (nonlinear token burn + multi-vendor orchestration tax)
+  const diyContainment = Math.max(baseCont + 0.08, targetCont - 0.11);
+  const diyAutomatedCalls = effectiveMonthlyCalls * diyContainment;
+  const diyEscalatedCalls = effectiveMonthlyCalls * (1 - diyContainment);
+  const nonlinearSurgePenalty = Math.pow(surge, 1.38); // Token retries + context bloat under peak load
+  const diyPerCallTokenAndApi = 0.58 * nonlinearSurgePenalty;
+  const diyMonthlyCost = (diyAutomatedCalls * diyPerCallTokenAndApi) + (diyEscalatedCalls * unitHumanCost) + 28500;
+
+  // Savings & Agent Time Reclaimed
+  const monthlyNetSavings = Math.max(0, legacyMonthlyCost - omiliaMonthlyCost);
+  const annualNetSavings = monthlyNetSavings * 12;
+  const threeYearDiySavings = Math.max(0, (diyMonthlyCost - omiliaMonthlyCost) * 36);
+
+  const deflectedCallsMo = Math.max(0, omiliaAutomatedCalls - legacyIvrCalls);
+  const deflectionHoursMo = (deflectedCallsMo * totalHandleSec) / 3600;
+  const assistHoursMo = (omiliaEscalatedCalls * (tgSecSaved + cpSecSaved)) / 3600;
+  const totalHoursSavedMo = deflectionHoursMo + assistHoursMo;
+
+  const daysSavedPerAgentMo = totalHoursSavedMo / agents / shiftHours;
+  const ftesFreed = totalHoursSavedMo / (shiftHours * 21.5);
+
+  // Update KPI Cards
+  document.getElementById("kpiAnnualSavings").textContent = "$" + Math.round(annualNetSavings).toLocaleString();
+  document.getElementById("kpiMonthlySavings").textContent = "$" + Math.round(monthlyNetSavings).toLocaleString() + " / mo vs. baseline";
+  document.getElementById("kpiDiyAdvantage").textContent = "$" + Math.round(threeYearDiySavings).toLocaleString();
+  document.getElementById("kpiContainmentLift").textContent = "+" + Math.round((targetCont - baseCont) * 100) + "%";
+  document.getElementById("kpiContainedCalls").textContent = Math.round(omiliaAutomatedCalls).toLocaleString() + " calls resolved/mo";
+  document.getElementById("kpiAgentDaysSaved").textContent = daysSavedPerAgentMo.toFixed(1) + " days";
+  document.getElementById("kpiAgentHoursSaved").textContent = Math.round(totalHoursSavedMo).toLocaleString() + " hrs/mo reclaimed";
+  document.getElementById("kpiFtesFreed").textContent = Math.round(ftesFreed).toLocaleString() + " FTEs";
+  document.getElementById("kpiEffectiveCostPerCall").textContent = "Loaded human cost: $" + unitHumanCost.toFixed(2) + "/call";
+
+  // Render SVG TCO Comparison Chart
+  renderTcoSvg(legacyMonthlyCost * 12, diyMonthlyCost * 12, omiliaMonthlyCost * 12);
+
+  // Render Breakdown Table
+  const tbody = document.getElementById("tcoComparisonTable");
+  tbody.innerHTML = `
+    <tr>
+      <td><strong>Effective Containment Rate</strong></td>
+      <td>${Math.round(baseCont * 100)}%</td>
+      <td>${Math.round(diyContainment * 100)}% (token drift)</td>
+      <td><span class="tag tag-teal">${Math.round(targetCont * 100)}% Blended</span></td>
+    </tr>
+    <tr>
+      <td><strong>Monthly Platform &amp; AI Spend</strong></td>
+      <td>$${Math.round(legacyIvrCalls * 0.14).toLocaleString()}</td>
+      <td style="color: var(--accent-rose);">$${Math.round((diyAutomatedCalls * diyPerCallTokenAndApi) + 28500).toLocaleString()}</td>
+      <td style="color: var(--accent-teal);">$${Math.round((omiliaAutomatedCalls * omiliaOutcomeRate) + 6500).toLocaleString()}</td>
+    </tr>
+    <tr>
+      <td><strong>Residual Human Escalation Cost</strong></td>
+      <td>$${Math.round(legacyHumanCalls * unitHumanCost).toLocaleString()}</td>
+      <td>$${Math.round(diyEscalatedCalls * unitHumanCost).toLocaleString()}</td>
+      <td>$${Math.round(omiliaEscalatedCalls * omiliaEscalatedUnitCost).toLocaleString()}</td>
+    </tr>
+    <tr>
+      <td><strong>Annualized Total Cost (TCO)</strong></td>
+      <td><strong>$${Math.round(legacyMonthlyCost * 12).toLocaleString()}</strong></td>
+      <td style="color: var(--accent-rose);"><strong>$${Math.round(diyMonthlyCost * 12).toLocaleString()}</strong></td>
+      <td style="color: var(--accent-emerald);"><strong>$${Math.round(omiliaMonthlyCost * 12).toLocaleString()}</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Data Sovereignty &amp; Egress</strong></td>
+      <td>On-Prem / Legacy</td>
+      <td><span class="tag tag-rose">Public Frontier Egress</span></td>
+      <td><span class="tag tag-emerald">Zero Frontier Egress</span></td>
+    </tr>
+  `;
+}
+
+function renderTcoSvg(annualLegacy, annualDiy, annualOmilia) {
+  const maxVal = Math.max(annualLegacy, annualDiy, annualOmilia, 1);
+  const bars = [
+    { label: "1. Legacy Human-Heavy Baseline", val: annualLegacy, color: "#64748b", note: "High live-agent AHT & KBA burden" },
+    { label: "2. DIY Frontier LLM + Glue Stack", val: annualDiy, color: "#f43f5e", note: "Nonlinear token surge + integration tax" },
+    { label: "3. Omilia OCP Outcome Runtime", val: annualOmilia, color: "#14b8a6", note: "Flat $0.40/resolved + TalkGuard + CoPilot" }
+  ];
+
+  let svg = `<svg viewBox="0 0 680 195" style="width:100%; height:auto; display:block;">`;
+  bars.forEach((b, i) => {
+    const y = 14 + i * 60;
+    const barW = Math.max(24, Math.round((b.val / maxVal) * 430));
+    svg += `
+      <text x="4" y="${y + 13}" fill="#f8fafc" font-size="12" font-weight="700">${b.label}</text>
+      <text x="674" y="${y + 13}" fill="${b.color}" font-size="13" font-weight="800" text-anchor="end">$${Math.round(b.val).toLocaleString()}/yr</text>
+      <rect x="4" y="${y + 20}" width="670" height="22" rx="5" fill="#09101f" stroke="#233354" />
+      <rect x="4" y="${y + 20}" width="${barW}" height="22" rx="5" fill="${b.color}" />
+      <text x="${Math.min(665, barW + 12)}" y="${y + 35}" fill="#94a3b8" font-size="10.5">${b.note}</text>
+    `;
+  });
+  svg += `</svg>`;
+  document.getElementById("tcoSvgChart").innerHTML = svg;
+}
+
+// Event bindings for Tab 1
+["inpCallVolume", "inpBaseContainment", "inpTargetContainment", "inpAht", "inpSurge", "inpWage", "inpBurden", "inpOccupancy", "inpAcw", "inpCfoOverrideVal", "inpAgents", "inpShiftHours", "inpWorkDays"].forEach(id => {
+  document.getElementById(id).addEventListener("input", recalcTab1);
+});
+
+["chkTalkguard", "chkCopilot"].forEach(id => {
+  document.getElementById(id).addEventListener("change", recalcTab1);
+});
+
+document.getElementById("chkCfoOverride").addEventListener("change", (e) => {
+  document.getElementById("inpCfoOverrideVal").disabled = !e.target.checked;
+  recalcTab1();
+});
+
+document.querySelectorAll("[data-wage]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.getElementById("chkCfoOverride").checked = false;
+    document.getElementById("inpCfoOverrideVal").disabled = true;
+    document.getElementById("inpWage").value = btn.dataset.wage;
+    document.getElementById("inpBurden").value = btn.dataset.burden;
+    recalcTab1();
+    showToast(`Applied ${btn.textContent} labor preset`);
+  });
+});
+
+document.getElementById("btnAutoFitFte").addEventListener("click", () => autoFitFtes(true));
+
+// ============================================================================
+// 4. TAB 2: AI RADAR 2.0 ENGINE
+// ============================================================================
+function getActiveUseCases() {
+  return [
+    ...VERTICAL_PRESETS[state.vertical].useCases,
+    ...state.customUseCases[state.vertical]
+  ];
+}
+
+function getQuadrantMeta(feas, imp) {
+  if (feas >= 50 && imp >= 50) {
+    return { label: "Immediate Funding (miniApps®)", tagClass: "tag-teal", color: "#14b8a6" };
+  }
+  if (feas < 50 && imp >= 50) {
+    return { label: "API Foundation + HITL Gate", tagClass: "tag-amber", color: "#f59e0b" };
+  }
+  if (feas >= 50 && imp < 50) {
+    return { label: "Quick-Win Sandbox", tagClass: "tag-blue", color: "#38bdf8" };
+  }
+  return { label: "Defer / Phase 3", tagClass: "tag-rose", color: "#f43f5e" };
+}
+
+function renderRadar() {
+  const list = getActiveUseCases();
+  const padL = 54, padR = 24, padT = 24, padB = 44;
+  const w = 680 - padL - padR;
+  const h = 460 - padT - padB;
+  const midX = padL + w / 2;
+  const midY = padT + h / 2;
+
+  let svg = `
+    <!-- Quadrant Backgrounds -->
+    <rect x="${padL}" y="${padT}" width="${w/2}" height="${h/2}" fill="rgba(245,158,11,0.07)" />
+    <rect x="${midX}" y="${padT}" width="${w/2}" height="${h/2}" fill="rgba(20,184,166,0.10)" />
+    <rect x="${padL}" y="${midY}" width="${w/2}" height="${h/2}" fill="rgba(244,63,94,0.06)" />
+    <rect x="${midX}" y="${midY}" width="${w/2}" height="${h/2}" fill="rgba(56,189,248,0.07)" />
+
+    <!-- Outer & Crosshair Grid -->
+    <rect x="${padL}" y="${padT}" width="${w}" height="${h}" fill="none" stroke="#2d426b" stroke-width="1.5" />
+    <line x1="${midX}" y1="${padT}" x2="${midX}" y2="${padT + h}" stroke="#3b5280" stroke-dasharray="5,5" />
+    <line x1="${padL}" y1="${midY}" x2="${padL + w}" y2="${midY}" stroke="#3b5280" stroke-dasharray="5,5" />
+
+    <!-- Quadrant Headers -->
+    <text x="${padL + 10}" y="${padT + 18}" fill="#fbbf24" font-size="10.5" font-weight="700">API / DATA FOUNDATION FIRST (HITL)</text>
+    <text x="${padL + w - 10}" y="${padT + 18}" fill="#2dd4bf" font-size="10.5" font-weight="700" text-anchor="end">IMMEDIATE FUNDING (miniApps® + AI BOOTSTRAP)</text>
+    <text x="${padL + 10}" y="${padT + h - 10}" fill="#fb7185" font-size="10.5" font-weight="700">DEFER (AVOID SCIENCE PROJECTS)</text>
+    <text x="${padL + w - 10}" y="${padT + h - 10}" fill="#60a5fa" font-size="10.5" font-weight="700" text-anchor="end">QUICK-WIN SANDBOX (VOICE RAG)</text>
+
+    <!-- Axis Labels -->
+    <text x="${padL + w/2}" y="446" fill="#94a3b8" font-size="11" font-weight="700" text-anchor="middle">TECHNICAL FEASIBILITY &amp; API / DATA MATURITY (0–100%) &rarr;</text>
+    <text x="16" y="${padT + h/2}" fill="#94a3b8" font-size="11" font-weight="700" text-anchor="middle" transform="rotate(-90 16 ${padT + h/2})">STRATEGIC &amp; FINANCIAL IMPACT (0–100%) &rarr;</text>
+  `;
+
+  list.forEach((uc, idx) => {
+    const cx = padL + (uc.feas / 100) * w;
+    const cy = padT + h - (uc.imp / 100) * h;
+    const q = getQuadrantMeta(uc.feas, uc.imp);
+    const isSelected = idx === state.selectedUcIndex;
+    const shortLabel = uc.name.length > 24 ? uc.name.slice(0, 22) + "…" : uc.name;
+    const anchor = uc.feas > 76 ? "end" : "start";
+    const textDx = uc.feas > 76 ? -11 : 11;
+
+    svg += `
+      <g class="radar-pin" onclick="selectUseCase(${idx})">
+        ${isSelected ? `<circle cx="${cx}" cy="${cy}" r="14" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="3,2" />` : ""}
+        <circle class="pin-core" cx="${cx}" cy="${cy}" r="${isSelected ? 8 : 6.5}" fill="${q.color}" stroke="#070d19" stroke-width="2" />
+        <text x="${cx + textDx}" y="${cy + 4}" fill="${isSelected ? "#ffffff" : "#cbd5e1"}" font-size="10.5" font-weight="${isSelected ? "700" : "600"}" text-anchor="${anchor}">${shortLabel}</text>
+      </g>
+    `;
+  });
+
+  document.getElementById("radarSvg").innerHTML = svg;
+
+  // Render Quick List
+  const container = document.getElementById("ucListContainer");
+  document.getElementById("ucCountLabel").textContent = `${list.length} intents`;
+  container.innerHTML = list.map((uc, idx) => {
+    const q = getQuadrantMeta(uc.feas, uc.imp);
+    const activeStyle = idx === state.selectedUcIndex ? "border-color: var(--accent-teal); background: rgba(20,184,166,0.1);" : "";
+    return `
+      <div onclick="selectUseCase(${idx})" style="cursor:pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-subtle); background: var(--bg-input); display:flex; justify-content:space-between; align-items:center; gap:8px; ${activeStyle}">
+        <span style="font-size: 12px; font-weight: 600;">${uc.name}</span>
+        <span class="tag ${q.tagClass}">${uc.feas}F / ${uc.imp}I</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function selectUseCase(idx) {
+  const list = getActiveUseCases();
+  if (!list[idx]) idx = 0;
+  state.selectedUcIndex = idx;
+  const uc = list[idx];
+  const q = getQuadrantMeta(uc.feas, uc.imp);
+
+  const qTag = document.getElementById("inspQuadrantTag");
+  qTag.textContent = q.label;
+  qTag.className = "tag " + q.tagClass;
+
+  document.getElementById("inspUcTitle").textContent = uc.name;
+  document.getElementById("inspUcDesc").textContent = uc.desc;
+  document.getElementById("inspFeasScore").textContent = `${uc.feas} / 100`;
+  document.getElementById("inspImpScore").textContent = `${uc.imp} / 100`;
+  document.getElementById("inspRuntimeTier").textContent = uc.runtime;
+  document.getElementById("inspRolloutPlan").textContent = uc.rollout;
+  document.getElementById("inspGovernance").textContent = uc.gov;
+
+  renderRadar();
+}
+
+document.getElementById("btnAddCustomUc").addEventListener("click", () => {
+  const name = document.getElementById("inpCustomUcName").value.trim();
+  if (!name) {
+    showToast("Enter a prospect use case name first");
+    return;
+  }
+  const feas = Math.min(99, Math.max(5, parseInt(document.getElementById("inpCustomUcFeas").value, 10) || 75));
+  const imp = Math.min(99, Math.max(5, parseInt(document.getElementById("inpCustomUcImp").value, 10) || 80));
+
+  const isHighFeas = feas >= 50;
+  const newUc = {
+    name,
+    feas,
+    imp,
+    desc: `Custom prospect call driver scoped live during ${VERTICAL_PRESETS[state.vertical].name} discovery.`,
+    runtime: isHighFeas ? "Deterministic miniApps® + AI Bootstrapping" : "Autonomous Task Agent + Human-in-the-Loop Gate",
+    rollout: isHighFeas
+      ? "Phase 1 (Weeks 1–3): Ingest historical call transcripts & OpenAPI schema for 95%+ Day-1 accuracy."
+      : "Phase 2 ('Training Wheels'): Expose backend API via MCP facade first, then graduate from supervised assist to autonomous execution.",
+    gov: "Glass Box decision logging + zero frontier model egress."
+  };
+
+  state.customUseCases[state.vertical].push(newUc);
+  document.getElementById("inpCustomUcName").value = "";
+  const newIdx = getActiveUseCases().length - 1;
+  selectUseCase(newIdx);
+  showToast(`Plotted "${name}" on AI Radar 2.0`);
+});
+
+// ============================================================================
+// 5. TAB 3: PARTNER DEAL-SCOPING & SOW GUARDRAILS
+// ============================================================================
+function recalcTab3() {
+  const preset = VERTICAL_PRESETS[state.vertical];
+  const motion = document.getElementById("selPartnerMotion").value;
+  const sov = document.getElementById("selSovereignty").value;
+  const intents = parseInt(document.getElementById("inpIntentCount").value, 10) || 4;
+  const apiReady = document.getElementById("selApiReadiness").value;
+
+  document.getElementById("valIntentCount").textContent = `${intents} Intent${intents > 1 ? "s" : ""}`;
+
+  // Compliance Badges & Backend Stack
+  document.getElementById("scopingComplianceBadges").innerHTML = preset.compliance
+    .map(c => `<span class="tag tag-emerald">${c}</span>`)
+    .join("");
+  document.getElementById("scopingBackendStack").textContent = preset.backendStack;
+
+  // Deterministic HLEE Calculation
+  let weeks = 3 + Math.ceil(intents * 0.5);
+  let psDays = 10 + intents * 2;
+  if (sov === "baremetal") {
+    weeks += 3;
+    psDays += 12;
+  }
+  if (apiReady === "mixed") {
+    weeks += 1;
+    psDays += 4;
+  } else if (apiReady === "mainframe") {
+    weeks += 2;
+    psDays += 8;
+  }
+
+  document.getElementById("hleeWeeksVal").textContent = `${weeks}–${weeks + 1} Weeks`;
+  document.getElementById("hleeDaysVal").textContent = `${psDays} PS Days`;
+  document.getElementById("hleeTimelineBadge").textContent = `${weeks}–${weeks + 1} Weeks Phase 1`;
+
+  // Co-Sell Hook
+  const hooks = {
+    ccaas: `Position Omilia as "Deal Insurance" to unblock stalled ${preset.shortName} CCaaS cloud migrations with native SIP/UUI context handoff.`,
+    gsi: `Empower GSI architects with standardized MCP tool schemas & AI Bootstrapping to build repeatable ${preset.shortName} practices without custom ASR/NLU tuning.`,
+    bpo: `Protect BPO margins by pivoting from headcount billing to outcome-based containment ($0.40/resolved) + CSR CoPilot AHT compression.`
+  };
+  document.getElementById("scopingPositioningHook").textContent = hooks[motion];
+
+  // SOW Guardrails
+  const guardrails = [
+    `<strong>80/20 Phase-1 Scope Cap:</strong> Anchor SOW strictly to the top ${Math.min(intents, 5)} high-volume ${preset.shortName} intents; defer long-tail agentic workflows to Phase 2 self-learning.`,
+    `<strong>Sub-300ms Latency SLA Boundary:</strong> Omilia guarantees &lt;300ms parallel orchestration and &lt;45ms Lexis TTS; customer/partner owns downstream ${preset.shortName} API response latency.`,
+    apiReady === "mainframe"
+      ? `<strong>Mainframe Middleware Gate:</strong> Customer/GSI must expose REST/MCP facade (e.g., IBM z/OS Connect or MQ REST bridge) prior to Sprint 2; 3270 screen-scraping is out of SLA scope.`
+      : `<strong>API Schema Prerequisite:</strong> OpenAPI 3.0 / MCP tool schemas and non-prod sandbox credentials required 5 business days prior to kickoff.`,
+    sov === "baremetal"
+      ? `<strong>Bare Metal Sovereignty Gate (+3 Weeks):</strong> Customer InfoSec to validate air-gapped node sizing, HSM/TLS certificates, and ${preset.compliance[0]} audit logging in Week 1.`
+      : `<strong>Walled-Garden InfoSec Pack:</strong> Pre-certified ${preset.compliance.slice(0, 3).join(", ")} attestation pack delivered at discovery to accelerate security sign-off.`
+  ];
+  document.getElementById("sowGuardrailsList").innerHTML = guardrails.map(g => `<li>${g}</li>`).join("");
+
+  // RACI Table
+  const raciRows = [
+    ["AI Bootstrapping & NLU/Dialog Build", "Lead (95%+ Day-1 Accuracy)", "Provide anonymized transcripts & SOPs"],
+    ["Telephony / CCaaS SIP & UUI Integration", "Provide Native Connector", motion === "ccaas" ? "Lead (CCaaS Trunking & Desktop)" : "Co-Deliver with CCaaS"],
+    ["Backend Core System / MCP Exposure", "MCP Client & Parallel Dispatch", motion === "gsi" ? "Lead (GSI Middleware / APIs)" : "Customer IT / API Team"],
+    ["Closed-Loop Self-Learning & HITL QA", "Offline Pattern Discovery", "Mandatory Human Approval Gate"]
+  ];
+  document.getElementById("raciTableBody").innerHTML = raciRows.map(r => `
+    <tr>
+      <td><strong>${r[0]}</strong></td>
+      <td><span class="tag tag-teal">${r[1]}</span></td>
+      <td>${r[2]}</td>
+    </tr>
+  `).join("");
+}
+
+["selPartnerMotion", "selSovereignty", "inpIntentCount", "selApiReadiness"].forEach(id => {
+  document.getElementById(id).addEventListener("change", recalcTab3);
+  document.getElementById(id).addEventListener("input", recalcTab3);
+});
+
+document.getElementById("btnCopyBrief").addEventListener("click", () => {
+  const preset = VERTICAL_PRESETS[state.vertical];
+  const brief = [
+    `OMILIA ENTERPRISE CX DEAL BRIEF — ${preset.name.toUpperCase()}`,
+    `================================================================`,
+    `Annual Net Savings: ${document.getElementById("kpiAnnualSavings").textContent} (${document.getElementById("kpiMonthlySavings").textContent})`,
+    `3-Year TCO Advantage vs. DIY Frontier LLM: ${document.getElementById("kpiDiyAdvantage").textContent}`,
+    `Containment Lift: ${document.getElementById("kpiContainmentLift").textContent} (${document.getElementById("kpiContainedCalls").textContent})`,
+    `Agent Capacity Reclaimed: ${document.getElementById("kpiAgentDaysSaved").textContent}/agent/mo (${document.getElementById("kpiFtesFreed").textContent})`,
+    ``,
+    `PARTNER SCOPING & HLEE GUARDRAILS:`,
+    `- GTM Motion: ${document.getElementById("selPartnerMotion").selectedOptions[0].text}`,
+    `- Deployment: ${document.getElementById("selSovereignty").selectedOptions[0].text}`,
+    `- Phase 1 Estimate: ${document.getElementById("hleeWeeksVal").textContent} / ${document.getElementById("hleeDaysVal").textContent}`,
+    `- Compliance Perimeter: ${preset.compliance.join(", ")}`,
+    `- Target Backend Stack: ${preset.backendStack}`,
+    `- Architecture Guarantee: Zero Frontier Egress | <300ms Parallel MCP Dispatch | <45ms Lexis TTS`
+  ].join("\n");
+
+  const ta = document.createElement("textarea");
+  ta.value = brief;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  showToast("Copied Executive Deal Brief to clipboard");
+});
+
+document.getElementById("btnPrintBrief").addEventListener("click", () => window.print());
+
+// ============================================================================
+// 6. TAB 4: LIVE MCP PROTOCOL & GLASS BOX INSPECTOR
+// ============================================================================
+let rpcCounter = 1;
+
+async function runMcpAction(actionType) {
+  const preset = VERTICAL_PRESETS[state.vertical];
+  const useBridge = document.getElementById("chkLocalhostBridge").checked;
+  const reqId = rpcCounter++;
+
+  let requestPayload = {};
+  let simulatedResponse = {};
+
+  if (actionType === "tools/list") {
+    requestPayload = {
+      jsonrpc: "2.0",
+      id: reqId,
+      method: "tools/list",
+      params: { verticalContext: state.vertical }
+    };
+    simulatedResponse = {
+      jsonrpc: "2.0",
+      id: reqId,
+      result: {
+        tools: [
+          {
+            name: "check_partner_architecture_fit",
+            description: "Validates CCaaS connector, compliance perimeter, and zero-egress OCP deployment topology.",
+            inputSchema: { type: "object", properties: { vertical: { type: "string" }, ccaas: { type: "string" }, sovereignty: { type: "string" } }, required: ["vertical", "ccaas"] }
+          },
+          {
+            name: "simulate_parallel_tool_dispatch",
+            description: "Executes parallel async backend lookups under Omilia's <300ms voice latency SLA.",
+            inputSchema: { type: "object", properties: { vertical: { type: "string" }, systems: { type: "array", items: { type: "string" } } }, required: ["vertical"] }
+          },
+          {
+            name: "generate_partner_sow_guardrails",
+            description: "Computes deterministic HLEE timeline, RACI matrix, and 80/20 SOW guardrails.",
+            inputSchema: { type: "object", properties: { vertical: { type: "string" }, intents: { type: "number" }, apiReadiness: { type: "string" } }, required: ["vertical", "intents"] }
+          }
+        ]
+      }
+    };
+  } else if (actionType === "parallel") {
+    const sysNames = preset.mcpSystems.map(s => s.name);
+    const maxParallelMs = Math.max(...preset.mcpSystems.map(s => s.ms));
+    const lexisTtsMs = 42;
+    const totalOmiliaMs = maxParallelMs + lexisTtsMs;
+    const seqSumMs = preset.mcpSystems.reduce((acc, s) => acc + s.ms, 0) + 640 + 210; // API sum + Frontier LLM hops + 3rd-party TTS
+
+    requestPayload = {
+      jsonrpc: "2.0",
+      id: reqId,
+      method: "tools/call",
+      params: {
+        name: "simulate_parallel_tool_dispatch",
+        arguments: {
+          vertical: preset.name,
+          systems: sysNames,
+          dispatchMode: "ASYNC_PARALLEL_NON_BLOCKING"
+        }
+      }
+    };
+
+    simulatedResponse = {
+      jsonrpc: "2.0",
+      id: reqId,
+      result: {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              vertical: preset.name,
+              dispatchStrategy: "Parallel Async MCP Fan-Out",
+              toolResolutionMs: maxParallelMs,
+              lexisNativeTtsMs: lexisTtsMs,
+              totalTurnaroundMs: totalOmiliaMs,
+              slaStatus: totalOmiliaMs < 300 ? "PASS (<300ms Voice SLA)" : "PASS (<350ms Complex Backend)",
+              competitorSequentialMs: seqSumMs,
+              latencySavedMs: seqSumMs - totalOmiliaMs,
+              securityAudit: {
+                frontierLlmEgress: "0 bytes (BLOCKED_BY_POLICY)",
+                complianceAttestation: preset.compliance
+              }
+            }, null, 2)
+          }
+        ]
+      }
+    };
+
+    updateWaterfallChart(preset.mcpSystems, maxParallelMs, lexisTtsMs, seqSumMs);
+  } else if (actionType === "arch") {
+    requestPayload = {
+      jsonrpc: "2.0",
+      id: reqId,
+      method: "tools/call",
+      params: {
+        name: "check_partner_architecture_fit",
+        arguments: {
+          vertical: preset.name,
+          ccaas: document.getElementById("selPartnerMotion").value,
+          sovereignty: document.getElementById("selSovereignty").value
+        }
+      }
+    };
+    simulatedResponse = {
+      jsonrpc: "2.0",
+      id: reqId,
+      result: {
+        vertical: preset.name,
+        ocpRole: "MCP Client (Host) inside Certified Walled Garden",
+        customerRole: "Hosts MCP Server wrapping " + preset.backendStack.split(",")[0],
+        authProtocol: "OAuth 2.0 Client Credentials + mTLS",
+        complianceVerified: preset.compliance,
+        zeroFrontierEgress: true
+      }
+    };
+  } else {
+    requestPayload = {
+      jsonrpc: "2.0",
+      id: reqId,
+      method: "tools/call",
+      params: {
+        name: "generate_partner_sow_guardrails",
+        arguments: {
+          vertical: preset.name,
+          intents: parseInt(document.getElementById("inpIntentCount").value, 10),
+          apiReadiness: document.getElementById("selApiReadiness").value
+        }
+      }
+    };
+    simulatedResponse = {
+      jsonrpc: "2.0",
+      id: reqId,
+      result: {
+        vertical: preset.name,
+        estimatedTimeline: document.getElementById("hleeWeeksVal").textContent,
+        estimatedPsEffort: document.getElementById("hleeDaysVal").textContent,
+        guardrails: [
+          "80/20 Rule: Phase 1 capped at top 3-5 volume drivers",
+          "Sub-300ms orchestration SLA isolated from customer legacy backend latency",
+          "Mandatory HITL approval gate before self-learned flow promotion"
+        ]
+      }
+    };
+  }
+
+  document.getElementById("mcpReqTrace").textContent = JSON.stringify(requestPayload, null, 2);
+
+  if (useBridge) {
+    try {
+      const res = await fetch("http://localhost:3333/mcp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestPayload)
+      });
+      const json = await res.json();
+      document.getElementById("mcpResTrace").textContent = JSON.stringify(json, null, 2);
+      document.getElementById("mcpTransportStatus").textContent = "Connected LIVE to http://localhost:3333/mcp";
+      return;
+    } catch (err) {
+      document.getElementById("mcpTransportStatus").textContent = "Localhost :3333 unreachable — seamlessly fell back to Embedded Runtime";
+    }
+  }
+
+  document.getElementById("mcpResTrace").textContent = JSON.stringify(simulatedResponse, null, 2);
+}
+
+function updateWaterfallChart(systems, maxParallelMs, lexisMs, seqTotalMs) {
+  const scaleMax = Math.max(seqTotalMs, 1500);
+  const omiliaTotal = maxParallelMs + lexisMs;
+
+  document.getElementById("wfSeqTotal").textContent = `${seqTotalMs.toLocaleString()} ms (Caller Hang-Up Risk)`;
+  document.getElementById("wfOmiliaTotal").textContent = `${omiliaTotal} ms (${maxParallelMs}ms parallel MCP + ${lexisMs}ms Lexis TTS)`;
+
+  // Sequential Track: LLM Reasoning + Sequential APIs + 3rd Party TTS
+  let seqHtml = `<div class="wf-seg" style="width:${(640 / scaleMax) * 100}%; background:#fb7185;">Frontier LLM (640ms)</div>`;
+  systems.forEach(s => {
+    seqHtml += `<div class="wf-seg" style="width:${(s.ms / scaleMax) * 100}%; background:${s.color};">${s.ms}ms</div>`;
+  });
+  seqHtml += `<div class="wf-seg" style="width:${(210 / scaleMax) * 100}%; background:#f59e0b;">TTS 210ms</div>`;
+  document.getElementById("wfSeqTrack").innerHTML = seqHtml;
+
+  // Omilia Parallel Track: Max single API leg + Lexis TTS
+  document.getElementById("wfOmiliaTrack").innerHTML = `
+    <div class="wf-seg" style="width:${(maxParallelMs / scaleMax) * 100}%; background:#14b8a6;">Parallel MCP (${maxParallelMs}ms)</div>
+    <div class="wf-seg" style="width:${(lexisMs / scaleMax) * 100}%; background:#10b981;">Lexis</div>
+  `;
+
+  document.getElementById("wfLegend").innerHTML = systems
+    .map(s => `<span><strong style="color:${s.color};">&#9632;</strong> ${s.name} (${s.ms}ms)</span>`)
+    .join("");
+}
+
+document.getElementById("btnMcpToolsList").addEventListener("click", () => runMcpAction("tools/list"));
+document.getElementById("btnMcpParallel").addEventListener("click", () => runMcpAction("parallel"));
+document.getElementById("btnMcpArchFit").addEventListener("click", () => runMcpAction("arch"));
+document.getElementById("btnMcpSowTool").addEventListener("click", () => runMcpAction("sow"));
+document.getElementById("chkLocalhostBridge").addEventListener("change", (e) => {
+  document.getElementById("mcpTransportStatus").textContent = e.target.checked
+    ? "Localhost Bridge armed (http://localhost:3333/mcp) — click any action to test"
+    : "Using Embedded JSON-RPC 2.0 Runtime (Offline Ready)";
+});
+
+// ============================================================================
+// 7. TYPESCRIPT MCP SERVER MODAL & FILE DOWNLOADER
+// ============================================================================
+const TS_SERVER_FILES = {
+  index: {
+    filename: "index.ts",
+    content: `import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+import http from "node:http";
+
+const server = new McpServer({
+  name: "omilia-partner-mcp",
+  version: "1.1.0"
+});
+
+// Tool 1: Architecture & Sovereignty Fit across 5 Verticals
+server.tool(
+  "check_partner_architecture_fit",
+  {
+    vertical: z.enum(["banking", "utilities", "insurance", "healthcare", "telecom"]).default("banking"),
+    ccaas: z.string().default("Genesys Cloud"),
+    sovereignty: z.enum(["saas", "baremetal"]).default("saas")
+  },
+  async ({ vertical, ccaas, sovereignty }) => {
+    const complianceMap: Record<string, string[]> = {
+      banking: ["PCI DSS Level 1", "SOC 2 Type II", "GDPR", "DORA Ready"],
+      utilities: ["NERC CIP", "Ofgem / PUC Regulatory", "ISO 27001"],
+      insurance: ["PCI DSS Level 1", "HIPAA & BAA", "NAIC Model Law"],
+      healthcare: ["HIPAA & Executed BAA", "HITRUST CSF", "Zero PHI Egress"],
+      telecom: ["PCI DSS Level 1", "ISO 27001", "GDPR / CCPA"]
+    };
+    const payload = {
+      vertical,
+      ocpArchitecture: "OCP acts as MCP Client; Customer hosts MCP Server",
+      ccaasConnector: \`Native \${ccaas} SIP/UUI Context Handoff\`,
+      deployment: sovereignty === "baremetal" ? "OCP Bare Metal (Air-Gapped)" : "OCP SaaS (Certified AWS Perimeter)",
+      compliance: complianceMap[vertical],
+      zeroFrontierEgress: true
+    };
+    return { content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] };
+  }
+);
+
+// Tool 2: Parallel Async Tool Dispatch (<300ms SLA)
+server.tool(
+  "simulate_parallel_tool_dispatch",
+  {
+    vertical: z.enum(["banking", "utilities", "insurance", "healthcare", "telecom"]).default("banking")
+  },
+  async ({ vertical }) => {
+    const start = Date.now();
+    // Simulate concurrent non-blocking backend resolution
+    const results = await Promise.all([
+      Promise.resolve({ service: "PrimaryCoreSystem", latencyMs: 195, status: "OK" }),
+      Promise.resolve({ service: "TalkGuardBiometrics", latencyMs: 140, status: "VERIFIED" }),
+      Promise.resolve({ service: "EnterpriseCRM", latencyMs: 215, status: "OK" })
+    ]);
+    const payload = {
+      vertical,
+      orchestration: "ASYNC_PARALLEL_MCP_DISPATCH",
+      parallelResolutionMs: 215,
+      lexisNativeTtsMs: 42,
+      totalLoopMs: 257,
+      slaCompliant: true,
+      elapsedExecutionMs: Date.now() - start,
+      results
+    };
+    return { content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] };
+  }
+);
+
+// Tool 3: Deterministic HLEE & SOW Guardrails
+server.tool(
+  "generate_partner_sow_guardrails",
+  {
+    vertical: z.string().default("banking"),
+    intents: z.number().min(1).max(8).default(4),
+    apiReadiness: z.enum(["modern", "mixed", "mainframe"]).default("modern")
+  },
+  async ({ vertical, intents, apiReadiness }) => {
+    const weeks = 3 + Math.ceil(intents * 0.5) + (apiReadiness === "mainframe" ? 2 : apiReadiness === "mixed" ? 1 : 0);
+    const payload = {
+      vertical,
+      phase1TimelineWeeks: weeks,
+      guardrails: [
+        "80/20 Rule: Phase 1 capped at top 3-5 volume drivers",
+        "Sub-300ms orchestration SLA isolated from legacy backend latency",
+        "Mandatory HITL approval gate prior to self-learned flow deployment"
+      ]
+    };
+    return { content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] };
+  }
+);
+
+// Start either HTTP bridge (:3333/mcp) or stdio transport
+if (process.argv.includes("--http")) {
+  http.createServer((req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    if (req.method === "OPTIONS") { res.writeHead(204); res.end(); return; }
+    if (req.url === "/mcp" && req.method === "POST") {
+      let body = "";
+      req.on("data", chunk => body += chunk);
+      req.on("end", () => {
+        const parsed = JSON.parse(body || "{}");
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({
+          jsonrpc: "2.0",
+          id: parsed.id || 1,
+          result: {
+            bridge: "LIVE_LOCALHOST_MCP_SERVER",
+            method: parsed.method,
+            params: parsed.params,
+            zeroFrontierEgress: true,
+            timestamp: new Date().toISOString()
+          }
+        }));
+      });
+      return;
+    }
+    res.writeHead(404);
+    res.end();
+  }).listen(3333, () => console.error("omilia-partner-mcp HTTP bridge listening on http://localhost:3333/mcp"));
+} else {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}`
+  },
+  package: {
+    filename: "package.json",
+    content: `{
+  "name": "omilia-partner-mcp",
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "start:http": "tsx src/index.ts --http"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}`
+  },
+  tsconfig: {
+    filename: "tsconfig.json",
+    content: `{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}`
+  }
+};
+
+function renderModalFile(fileKey) {
+  state.activeModalFile = fileKey;
+  document.querySelectorAll(".modal-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.file === fileKey);
+  });
+  document.getElementById("tsModalCode").textContent = TS_SERVER_FILES[fileKey].content;
+}
+
+document.getElementById("btnOpenTsModal").addEventListener("click", () => {
+  renderModalFile("index");
+  document.getElementById("tsModal").classList.add("open");
+});
+
+document.getElementById("btnCloseTsModal").addEventListener("click", () => {
+  document.getElementById("tsModal").classList.remove("open");
+});
+
+document.querySelectorAll(".modal-tab").forEach(tab => {
+  tab.addEventListener("click", () => renderModalFile(tab.dataset.file));
+});
+
+document.getElementById("btnDownloadTsFile").addEventListener("click", () => {
+  const fileObj = TS_SERVER_FILES[state.activeModalFile];
+  const blob = new Blob([fileObj.content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileObj.filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Downloaded ${fileObj.filename}`);
+});
+
+// Initialize Workbench on Load
+applyVerticalPreset("banking", true);
+</script>
+</body>
+</html>
