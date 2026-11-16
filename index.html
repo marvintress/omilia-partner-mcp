@@ -2060,7 +2060,7 @@ function recalcTab1() {
   const omiliaEscalatedCalls = effectiveMonthlyCalls * (1 - targetCont);
   const tgSecSaved = talkguardOn ? preset.roi.talkguardSec : 0;
   const cpSecSaved = copilotOn ? preset.roi.copilotSec : 0;
-  const totalHandleSec = Math.max(60, aht + acw);
+  const totalHandleSec = Math.max(1, aht + acw);
   const assistedTimeRatio = Math.max(0.55, (totalHandleSec - tgSecSaved - cpSecSaved) / totalHandleSec);
   const omiliaEscalatedUnitCost = unitHumanCost * assistedTimeRatio;
   const omiliaMonthlyCost = (omiliaAutomatedCalls * omiliaOutcomeRate) + (omiliaEscalatedCalls * omiliaEscalatedUnitCost) + 6500;
