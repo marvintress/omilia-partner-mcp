@@ -1103,12 +1103,12 @@
           <div class="card-header">
             <div>
               <div class="card-title">AI Radar 2.0: Feasibility &amp; Data Maturity vs. Strategic Impact</div>
-              <div class="card-subtitle">Click any plotted use case pin to inspect runtime tier, Day-1 accuracy path, and HITL governance (or click &times; to remove)</div>
+              <div class="card-subtitle">Click any plotted use case pin to inspect, toggle Phase 1 inclusion, or click &times; to remove</div>
             </div>
             <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <span class="tag tag-teal" id="t2VerticalTag">Banking &amp; Financial Services</span>
-              <button type="button" class="btn btn-sm btn-danger-outline" id="btnResetClearAllUc" title="Clear all plotted use cases for a live discovery workshop (or restore defaults if empty)">Reset / Clear All</button>
-              <button type="button" class="btn btn-sm" id="btnRestoreDefaultUc" title="Restore default vertical preset use cases">Restore Defaults</button>
+              <button type="button" class="btn btn-sm btn-danger-outline" id="btnResetClearAllUc" title="Clear all plotted use cases for a live discovery workshop">Reset / Clear All</button>
+              <button type="button" class="btn btn-sm" id="btnRestoreDefaultUc" title="Reload default vertical preset use cases">Reload Default Use Cases</button>
             </div>
           </div>
 
@@ -1148,8 +1148,9 @@
         <div class="card" style="margin-bottom: 18px;" id="ucInspectorCard">
           <div class="card-header">
             <div class="card-title">Runtime &amp; Rollout Inspector</div>
-            <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <span class="tag tag-teal" id="inspQuadrantTag">Immediate Funding</span>
+              <button type="button" class="btn btn-sm" id="btnToggleSelectedUc" title="Toggle inclusion of this use case in Phase 1 Deal Scoping">Included in SOW</button>
               <button type="button" class="btn btn-sm btn-danger-outline" id="btnDeleteSelectedUc" title="Delete currently selected use case">&times; Delete</button>
             </div>
           </div>
@@ -1190,9 +1191,9 @@
               <div class="card-title">Vertical Use-Case Portfolio</div>
               <span class="card-subtitle" id="ucCountLabel">7 intents</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <button type="button" class="btn btn-sm btn-danger-outline" id="btnListClearAllUc" title="Clear all plotted use cases">Reset / Clear All</button>
-              <button type="button" class="btn btn-sm" id="btnListRestoreDefaultUc" title="Restore default vertical preset use cases">Restore</button>
+              <button type="button" class="btn btn-sm" id="btnListRestoreDefaultUc" title="Reload default vertical preset use cases">Reload Default Use Cases</button>
             </div>
           </div>
           <div id="ucListContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 270px; overflow-y: auto;"></div>
@@ -1211,7 +1212,10 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">Partner &amp; Architecture Scoping Inputs</div>
-            <span class="tag tag-teal" id="t3VerticalTag">Banking</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="tag tag-teal" id="t3VerticalTag">Banking</span>
+              <button type="button" class="btn btn-sm" id="btnScopingInputReloadDefaults" title="Reload default vertical preset use cases">Reload Default Use Cases</button>
+            </div>
           </div>
 
           <div class="form-row">
@@ -1233,10 +1237,13 @@
 
           <div class="form-row">
             <div class="form-label-row">
-              <span>Phase 1 Bounded Intents (80/20 Rule)</span>
-              <span class="val-badge" id="valIntentCount">4 Intents</span>
+              <span>Phase 1 Bounded Intents (Synced with AI Radar 2.0)</span>
+              <span class="val-badge" id="valIntentCount">7 Intents</span>
             </div>
-            <input type="range" id="inpIntentCount" min="1" max="8" step="1" value="4">
+            <input type="range" id="inpIntentCount" min="0" max="8" step="1" value="7">
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+              Deleting or toggling off use cases on AI Radar 2.0 automatically updates this scope &amp; HLEE effort.
+            </div>
           </div>
 
           <div class="form-row">
@@ -1292,6 +1299,20 @@
               <div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-secondary);">Day-1 NLU Target</div>
               <div style="font-size: 19px; font-weight: 800; color: var(--accent-emerald);">95%+ Accuracy</div>
             </div>
+          </div>
+
+          <!-- Included Phase 1 Use Cases List (Synced from AI Radar 2.0) -->
+          <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px; margin-bottom: 14px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--accent-teal);">
+                  Included Phase 1 Use Cases (From AI Radar 2.0)
+                </span>
+                <span class="tag tag-teal" id="scopingIncludedCountBadge">7 Included</span>
+              </div>
+              <button type="button" class="btn btn-sm" id="btnScopingReloadDefaults" title="Reload default vertical preset use cases">Reload Default Use Cases</button>
+            </div>
+            <div id="scopingPhase1UseCasesList" style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto;"></div>
           </div>
 
           <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--accent-amber); margin-bottom: 8px;">
@@ -1878,11 +1899,11 @@ let state = {
   vertical: "banking",
   selectedUcIndex: 0,
   activeUseCases: {
-    banking: VERTICAL_PRESETS.banking.useCases.map(u => ({ ...u })),
-    utilities: VERTICAL_PRESETS.utilities.useCases.map(u => ({ ...u })),
-    insurance: VERTICAL_PRESETS.insurance.useCases.map(u => ({ ...u })),
-    healthcare: VERTICAL_PRESETS.healthcare.useCases.map(u => ({ ...u })),
-    telecom: VERTICAL_PRESETS.telecom.useCases.map(u => ({ ...u }))
+    banking: VERTICAL_PRESETS.banking.useCases.map(u => ({ ...u, included: true })),
+    utilities: VERTICAL_PRESETS.utilities.useCases.map(u => ({ ...u, included: true })),
+    insurance: VERTICAL_PRESETS.insurance.useCases.map(u => ({ ...u, included: true })),
+    healthcare: VERTICAL_PRESETS.healthcare.useCases.map(u => ({ ...u, included: true })),
+    telecom: VERTICAL_PRESETS.telecom.useCases.map(u => ({ ...u, included: true }))
   },
   activeModalFile: "index"
 };
@@ -2163,6 +2184,16 @@ function getActiveUseCases() {
   return state.activeUseCases[state.vertical];
 }
 
+function getIncludedUseCases() {
+  return getActiveUseCases().filter(uc => uc.included !== false);
+}
+
+function getUseCasePsDays(uc) {
+  if (uc.feas >= 75) return 2;
+  if (uc.feas >= 50) return 3;
+  return 4;
+}
+
 function getQuadrantMeta(feas, imp) {
   if (feas >= 50 && imp >= 50) {
     return { label: "Immediate Funding (miniApps®)", tagClass: "tag-teal", color: "#14b8a6" };
@@ -2174,6 +2205,20 @@ function getQuadrantMeta(feas, imp) {
     return { label: "Quick-Win Sandbox", tagClass: "tag-blue", color: "#38bdf8" };
   }
   return { label: "Defer / Phase 3", tagClass: "tag-rose", color: "#f43f5e" };
+}
+
+function toggleUseCaseIncluded(idx) {
+  const list = getActiveUseCases();
+  if (idx < 0 || idx >= list.length) return;
+  const uc = list[idx];
+  uc.included = uc.included === false ? true : false;
+  selectUseCase(state.selectedUcIndex);
+  recalcTab3();
+  showToast(
+    uc.included
+      ? `Included "${uc.name}" in Phase 1 Deal Scoping`
+      : `Excluded "${uc.name}" from Phase 1 Deal Scoping`
+  );
 }
 
 function deleteUseCase(idx) {
@@ -2190,7 +2235,8 @@ function deleteUseCase(idx) {
   }
 
   selectUseCase(state.selectedUcIndex);
-  showToast(`Removed "${removed.name}" from AI Radar 2.0`);
+  recalcTab3();
+  showToast(`Removed "${removed.name}" from AI Radar & Deal Scope`);
 }
 
 function clearAllUseCases() {
@@ -2202,18 +2248,21 @@ function clearAllUseCases() {
   state.activeUseCases[state.vertical] = [];
   state.selectedUcIndex = -1;
   selectUseCase(-1);
-  showToast("Cleared all plotted use cases — ready for live workshop customization");
+  recalcTab3();
+  showToast("Cleared all plotted use cases — Deal Scope reset to 0 intents");
 }
 
 function restoreDefaultUseCases() {
-  state.activeUseCases[state.vertical] = VERTICAL_PRESETS[state.vertical].useCases.map(u => ({ ...u }));
+  state.activeUseCases[state.vertical] = VERTICAL_PRESETS[state.vertical].useCases.map(u => ({ ...u, included: true }));
   state.selectedUcIndex = 0;
   selectUseCase(0);
-  showToast(`Restored default ${VERTICAL_PRESETS[state.vertical].shortName} use cases`);
+  recalcTab3();
+  showToast(`Reloaded default ${VERTICAL_PRESETS[state.vertical].shortName} use cases`);
 }
 
 function renderRadar() {
   const list = getActiveUseCases();
+  const includedCount = getIncludedUseCases().length;
   const padL = 54, padR = 24, padT = 24, padB = 44;
   const w = 680 - padL - padR;
   const h = 460 - padT - padB;
@@ -2246,9 +2295,9 @@ function renderRadar() {
   if (list.length === 0) {
     svg += `
       <g>
-        <rect x="${midX - 185}" y="${midY - 26}" width="370" height="52" rx="8" fill="rgba(10, 17, 32, 0.9)" stroke="#334a78" />
+        <rect x="${midX - 195}" y="${midY - 26}" width="390" height="52" rx="8" fill="rgba(10, 17, 32, 0.9)" stroke="#334a78" />
         <text x="${midX}" y="${midY - 4}" fill="#f8fafc" font-size="12" font-weight="700" text-anchor="middle">Quadrant Cleared for Live Discovery Workshop</text>
-        <text x="${midX}" y="${midY + 14}" fill="#94a3b8" font-size="11" text-anchor="middle">Plot custom prospect use cases below or click "Restore Defaults"</text>
+        <text x="${midX}" y="${midY + 14}" fill="#94a3b8" font-size="11" text-anchor="middle">Plot custom prospect use cases below or click "Reload Default Use Cases"</text>
       </g>
     `;
   } else {
@@ -2257,16 +2306,17 @@ function renderRadar() {
       const cy = padT + h - (uc.imp / 100) * h;
       const q = getQuadrantMeta(uc.feas, uc.imp);
       const isSelected = idx === state.selectedUcIndex;
+      const isIncluded = uc.included !== false;
       const shortLabel = uc.name.length > 22 ? uc.name.slice(0, 20) + "…" : uc.name;
       const anchor = uc.feas > 72 ? "end" : "start";
       const textDx = uc.feas > 72 ? -11 : 11;
 
       svg += `
-        <g class="radar-pin" onclick="selectUseCase(${idx})">
+        <g class="radar-pin" onclick="selectUseCase(${idx})" opacity="${isIncluded ? "1" : "0.4"}">
           ${isSelected ? `<circle cx="${cx}" cy="${cy}" r="14" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="3,2" />` : ""}
           <circle class="pin-core" cx="${cx}" cy="${cy}" r="${isSelected ? 8 : 6.5}" fill="${q.color}" stroke="#070d19" stroke-width="2" />
           <text x="${cx + textDx}" y="${cy + 4}" fill="${isSelected ? "#ffffff" : "#cbd5e1"}" font-size="10.5" font-weight="${isSelected ? "700" : "600"}" text-anchor="${anchor}">
-            <tspan>${shortLabel}</tspan>
+            <tspan ${!isIncluded ? 'text-decoration="line-through"' : ''}>${shortLabel}</tspan>
             <tspan class="radar-pin-del" dx="4" onclick="event.stopPropagation(); deleteUseCase(${idx})"><title>Remove ${uc.name}</title>&times;</tspan>
           </text>
         </g>
@@ -2278,13 +2328,13 @@ function renderRadar() {
 
   // Render Quick List
   const container = document.getElementById("ucListContainer");
-  document.getElementById("ucCountLabel").textContent = `${list.length} intent${list.length === 1 ? "" : "s"}`;
+  document.getElementById("ucCountLabel").textContent = `${includedCount} of ${list.length} included in Phase 1 SOW`;
 
   if (list.length === 0) {
     container.innerHTML = `
       <div style="padding: 16px 12px; border-radius: 6px; border: 1px dashed var(--border-subtle); background: var(--bg-input); text-align: center; color: var(--text-secondary); font-size: 12px;">
         No use cases currently plotted.<br>
-        <span style="font-size: 11px;">Add a custom prospect use case on the left or click <strong>Restore Defaults</strong>.</span>
+        <span style="font-size: 11px;">Add a custom prospect use case on the left or click <strong>Reload Default Use Cases</strong>.</span>
       </div>
     `;
     return;
@@ -2292,10 +2342,15 @@ function renderRadar() {
 
   container.innerHTML = list.map((uc, idx) => {
     const q = getQuadrantMeta(uc.feas, uc.imp);
+    const isIncluded = uc.included !== false;
     const activeStyle = idx === state.selectedUcIndex ? "border-color: var(--accent-teal); background: rgba(20,184,166,0.1);" : "";
+    const dimStyle = !isIncluded ? "opacity: 0.55;" : "";
     return `
-      <div onclick="selectUseCase(${idx})" style="cursor:pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-subtle); background: var(--bg-input); display:flex; justify-content:space-between; align-items:center; gap:8px; ${activeStyle}">
-        <span style="font-size: 12px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uc.name}</span>
+      <div onclick="selectUseCase(${idx})" style="cursor:pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-subtle); background: var(--bg-input); display:flex; justify-content:space-between; align-items:center; gap:8px; ${activeStyle} ${dimStyle}">
+        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+          <input type="checkbox" ${isIncluded ? "checked" : ""} onclick="event.stopPropagation(); toggleUseCaseIncluded(${idx})" title="Include ${uc.name} in Phase 1 Deal Scoping" style="cursor: pointer; accent-color: var(--accent-teal); width: 14px; height: 14px; flex-shrink: 0;">
+          <span style="font-size: 12px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${!isIncluded ? 'text-decoration: line-through;' : ''}">${uc.name}</span>
+        </div>
         <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
           <span class="tag ${q.tagClass}">${uc.feas}F / ${uc.imp}I</span>
           <button type="button" class="uc-del-btn" onclick="event.stopPropagation(); deleteUseCase(${idx})" title="Delete ${uc.name}" aria-label="Delete ${uc.name}">&times;</button>
@@ -2309,15 +2364,17 @@ function selectUseCase(idx) {
   const list = getActiveUseCases();
   const qTag = document.getElementById("inspQuadrantTag");
   const delBtn = document.getElementById("btnDeleteSelectedUc");
+  const toggleBtn = document.getElementById("btnToggleSelectedUc");
 
   if (list.length === 0) {
     state.selectedUcIndex = -1;
     qTag.textContent = "Workshop Canvas Empty";
     qTag.className = "tag tag-blue";
     if (delBtn) delBtn.style.display = "none";
+    if (toggleBtn) toggleBtn.style.display = "none";
 
     document.getElementById("inspUcTitle").textContent = "No Use Cases Plotted";
-    document.getElementById("inspUcDesc").textContent = "Plot a custom prospect call driver using the form on the left during live discovery, or click 'Restore Defaults' to reload vertical presets.";
+    document.getElementById("inspUcDesc").textContent = "Plot a custom prospect call driver using the form on the left during live discovery, or click 'Reload Default Use Cases' to reload vertical presets.";
     document.getElementById("inspFeasScore").textContent = "— / 100";
     document.getElementById("inspImpScore").textContent = "— / 100";
     document.getElementById("inspRuntimeTier").textContent = "Plot or select a use case to inspect runtime tier";
@@ -2331,11 +2388,18 @@ function selectUseCase(idx) {
   if (idx < 0 || !list[idx]) idx = 0;
   state.selectedUcIndex = idx;
   const uc = list[idx];
+  const isIncluded = uc.included !== false;
   const q = getQuadrantMeta(uc.feas, uc.imp);
 
   qTag.textContent = q.label;
   qTag.className = "tag " + q.tagClass;
   if (delBtn) delBtn.style.display = "inline-flex";
+  if (toggleBtn) {
+    toggleBtn.style.display = "inline-flex";
+    toggleBtn.textContent = isIncluded ? "✓ Included in SOW" : "Excluded (Click to Include)";
+    toggleBtn.style.borderColor = isIncluded ? "var(--accent-teal)" : "var(--border-subtle)";
+    toggleBtn.style.color = isIncluded ? "#2dd4bf" : "var(--text-secondary)";
+  }
 
   document.getElementById("inspUcTitle").textContent = uc.name;
   document.getElementById("inspUcDesc").textContent = uc.desc;
@@ -2362,6 +2426,7 @@ document.getElementById("btnAddCustomUc").addEventListener("click", () => {
     name,
     feas,
     imp,
+    included: true,
     desc: `Custom prospect call driver scoped live during ${VERTICAL_PRESETS[state.vertical].name} discovery.`,
     runtime: isHighFeas ? "Deterministic miniApps® + AI Bootstrapping" : "Autonomous Task Agent + Human-in-the-Loop Gate",
     rollout: isHighFeas
@@ -2374,13 +2439,21 @@ document.getElementById("btnAddCustomUc").addEventListener("click", () => {
   document.getElementById("inpCustomUcName").value = "";
   const newIdx = getActiveUseCases().length - 1;
   selectUseCase(newIdx);
-  showToast(`Plotted "${name}" on AI Radar 2.0`);
+  recalcTab3();
+  showToast(`Plotted "${name}" on AI Radar 2.0 & added to Deal Scope`);
 });
 
 document.getElementById("btnResetClearAllUc").addEventListener("click", clearAllUseCases);
 document.getElementById("btnListClearAllUc").addEventListener("click", clearAllUseCases);
 document.getElementById("btnRestoreDefaultUc").addEventListener("click", restoreDefaultUseCases);
 document.getElementById("btnListRestoreDefaultUc").addEventListener("click", restoreDefaultUseCases);
+document.getElementById("btnScopingReloadDefaults").addEventListener("click", restoreDefaultUseCases);
+document.getElementById("btnScopingInputReloadDefaults").addEventListener("click", restoreDefaultUseCases);
+document.getElementById("btnToggleSelectedUc").addEventListener("click", () => {
+  if (state.selectedUcIndex >= 0) {
+    toggleUseCaseIncluded(state.selectedUcIndex);
+  }
+});
 document.getElementById("btnDeleteSelectedUc").addEventListener("click", () => {
   if (state.selectedUcIndex >= 0) {
     deleteUseCase(state.selectedUcIndex);
@@ -2394,10 +2467,18 @@ function recalcTab3() {
   const preset = VERTICAL_PRESETS[state.vertical];
   const motion = document.getElementById("selPartnerMotion").value;
   const sov = document.getElementById("selSovereignty").value;
-  const intents = parseInt(document.getElementById("inpIntentCount").value, 10) || 4;
   const apiReady = document.getElementById("selApiReadiness").value;
 
-  document.getElementById("valIntentCount").textContent = `${intents} Intent${intents > 1 ? "s" : ""}`;
+  const activeList = getActiveUseCases();
+  const includedList = getIncludedUseCases();
+  const intents = includedList.length;
+
+  const intentSlider = document.getElementById("inpIntentCount");
+  intentSlider.max = Math.max(1, activeList.length);
+  intentSlider.value = intents;
+
+  document.getElementById("valIntentCount").textContent = `${intents} Intent${intents === 1 ? "" : "s"}`;
+  document.getElementById("scopingIncludedCountBadge").textContent = `${intents} of ${activeList.length} Plotted Included`;
 
   // Compliance Badges & Backend Stack
   document.getElementById("scopingComplianceBadges").innerHTML = preset.compliance
@@ -2405,24 +2486,64 @@ function recalcTab3() {
     .join("");
   document.getElementById("scopingBackendStack").textContent = preset.backendStack;
 
-  // Deterministic HLEE Calculation
-  let weeks = 3 + Math.ceil(intents * 0.5);
-  let psDays = 10 + intents * 2;
-  if (sov === "baremetal") {
-    weeks += 3;
-    psDays += 12;
-  }
-  if (apiReady === "mixed") {
-    weeks += 1;
-    psDays += 4;
-  } else if (apiReady === "mainframe") {
-    weeks += 2;
-    psDays += 8;
+  // Deterministic HLEE Calculation driven directly by included AI Radar 2.0 use cases
+  let weeks = 0;
+  let psDays = 0;
+  if (intents > 0) {
+    const ucPsDays = includedList.reduce((acc, uc) => acc + getUseCasePsDays(uc), 0);
+    psDays = 8 + ucPsDays;
+    weeks = 2 + Math.ceil(ucPsDays / 3.5);
+    if (sov === "baremetal") {
+      weeks += 3;
+      psDays += 12;
+    }
+    if (apiReady === "mixed") {
+      weeks += 1;
+      psDays += 4;
+    } else if (apiReady === "mainframe") {
+      weeks += 2;
+      psDays += 8;
+    }
+    document.getElementById("hleeWeeksVal").textContent = `${weeks}–${weeks + 1} Weeks`;
+    document.getElementById("hleeDaysVal").textContent = `${psDays} PS Days`;
+    document.getElementById("hleeTimelineBadge").textContent = `${weeks}–${weeks + 1} Weeks Phase 1`;
+  } else {
+    document.getElementById("hleeWeeksVal").textContent = "0 Weeks";
+    document.getElementById("hleeDaysVal").textContent = "0 PS Days";
+    document.getElementById("hleeTimelineBadge").textContent = "0 Intents Scoped";
   }
 
-  document.getElementById("hleeWeeksVal").textContent = `${weeks}–${weeks + 1} Weeks`;
-  document.getElementById("hleeDaysVal").textContent = `${psDays} PS Days`;
-  document.getElementById("hleeTimelineBadge").textContent = `${weeks}–${weeks + 1} Weeks Phase 1`;
+  // Render Included Phase 1 Use Cases inside Scoping Summary
+  const phase1Container = document.getElementById("scopingPhase1UseCasesList");
+  if (activeList.length === 0) {
+    phase1Container.innerHTML = `
+      <div style="padding: 12px; border-radius: 6px; border: 1px dashed var(--border-subtle); text-align: center; color: var(--text-secondary); font-size: 12px;">
+        No use cases plotted on AI Radar 2.0. Click <strong>Reload Default Use Cases</strong> above or plot custom call drivers on Tab 2.
+      </div>
+    `;
+  } else {
+    phase1Container.innerHTML = activeList.map((uc, idx) => {
+      const isIncluded = uc.included !== false;
+      const q = getQuadrantMeta(uc.feas, uc.imp);
+      const ucDays = getUseCasePsDays(uc);
+      return `
+        <div style="padding: 7px 10px; border-radius: 6px; border: 1px solid ${isIncluded ? "var(--border-subtle)" : "rgba(100,116,139,0.25)"}; background: ${isIncluded ? "rgba(15, 23, 42, 0.75)" : "rgba(10, 17, 32, 0.4)"}; display: flex; justify-content: space-between; align-items: center; gap: 8px; ${!isIncluded ? "opacity: 0.55;" : ""}">
+          <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+            <input type="checkbox" ${isIncluded ? "checked" : ""} onchange="toggleUseCaseIncluded(${idx})" title="Toggle Phase 1 SOW inclusion" style="cursor: pointer; accent-color: var(--accent-teal); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="min-width: 0; flex: 1;">
+              <div style="font-size: 12px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; ${!isIncluded ? "text-decoration: line-through;" : ""}">${uc.name}</div>
+              <div style="font-size: 10.5px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uc.runtime}</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+            <span class="tag ${q.tagClass}">${uc.feas}F / ${uc.imp}I</span>
+            <span class="tag ${isIncluded ? "tag-emerald" : "tag-rose"}">${isIncluded ? `+${ucDays} PS Days` : "Excluded"}</span>
+            <button type="button" class="uc-del-btn" onclick="deleteUseCase(${idx})" title="Delete ${uc.name}" aria-label="Delete ${uc.name}">&times;</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 
   // Co-Sell Hook
   const hooks = {
@@ -2433,8 +2554,11 @@ function recalcTab3() {
   document.getElementById("scopingPositioningHook").textContent = hooks[motion];
 
   // SOW Guardrails
+  const includedNamesSummary = intents > 0
+    ? includedList.slice(0, 5).map(u => u.name).join(", ") + (intents > 5 ? ` (+${intents - 5} more)` : "")
+    : "No intents currently selected";
   const guardrails = [
-    `<strong>80/20 Phase-1 Scope Cap:</strong> Anchor SOW strictly to the top ${Math.min(intents, 5)} high-volume ${preset.shortName} intents; defer long-tail agentic workflows to Phase 2 self-learning.`,
+    `<strong>Active Radar Scope (${intents} Intent${intents === 1 ? "" : "s"}):</strong> ${includedNamesSummary}.`,
     `<strong>Sub-300ms Latency SLA Boundary:</strong> Omilia guarantees &lt;300ms parallel orchestration and &lt;45ms Lexis TTS; customer/partner owns downstream ${preset.shortName} API response latency.`,
     apiReady === "mainframe"
       ? `<strong>Mainframe Middleware Gate:</strong> Customer/GSI must expose REST/MCP facade (e.g., IBM z/OS Connect or MQ REST bridge) prior to Sprint 2; 3270 screen-scraping is out of SLA scope.`
@@ -2461,13 +2585,27 @@ function recalcTab3() {
   `).join("");
 }
 
-["selPartnerMotion", "selSovereignty", "inpIntentCount", "selApiReadiness"].forEach(id => {
+["selPartnerMotion", "selSovereignty", "selApiReadiness"].forEach(id => {
   document.getElementById(id).addEventListener("change", recalcTab3);
   document.getElementById(id).addEventListener("input", recalcTab3);
 });
 
+document.getElementById("inpIntentCount").addEventListener("input", (e) => {
+  const targetCount = parseInt(e.target.value, 10) || 0;
+  const activeList = getActiveUseCases();
+  activeList.forEach((uc, idx) => {
+    uc.included = idx < targetCount;
+  });
+  selectUseCase(state.selectedUcIndex);
+  recalcTab3();
+});
+
 document.getElementById("btnCopyBrief").addEventListener("click", () => {
   const preset = VERTICAL_PRESETS[state.vertical];
+  const includedList = getIncludedUseCases();
+  const includedLines = includedList.length > 0
+    ? includedList.map((uc, i) => `  ${i + 1}. ${uc.name} (${uc.feas}F/${uc.imp}I — ${uc.runtime}, +${getUseCasePsDays(uc)} PS Days)`).join("\n")
+    : "  (None currently selected)";
   const brief = [
     `OMILIA ENTERPRISE CX DEAL BRIEF — ${preset.name.toUpperCase()}`,
     `================================================================`,
@@ -2475,6 +2613,9 @@ document.getElementById("btnCopyBrief").addEventListener("click", () => {
     `3-Year TCO Advantage vs. DIY Frontier LLM: ${document.getElementById("kpiDiyAdvantage").textContent}`,
     `Containment Lift: ${document.getElementById("kpiContainmentLift").textContent} (${document.getElementById("kpiContainedCalls").textContent})`,
     `Agent Capacity Reclaimed: ${document.getElementById("kpiAgentDaysSaved").textContent}/agent/mo (${document.getElementById("kpiFtesFreed").textContent})`,
+    ``,
+    `INCLUDED PHASE 1 USE CASES (${includedList.length} Scoped from AI Radar 2.0):`,
+    includedLines,
     ``,
     `PARTNER SCOPING & HLEE GUARDRAILS:`,
     `- GTM Motion: ${document.getElementById("selPartnerMotion").selectedOptions[0].text}`,
@@ -2614,6 +2755,7 @@ async function runMcpAction(actionType) {
       }
     };
   } else {
+    const includedNames = getIncludedUseCases().map(u => u.name);
     requestPayload = {
       jsonrpc: "2.0",
       id: reqId,
@@ -2622,7 +2764,8 @@ async function runMcpAction(actionType) {
         name: "generate_partner_sow_guardrails",
         arguments: {
           vertical: preset.name,
-          intents: parseInt(document.getElementById("inpIntentCount").value, 10),
+          intents: includedNames.length,
+          includedUseCases: includedNames,
           apiReadiness: document.getElementById("selApiReadiness").value
         }
       }
@@ -2634,6 +2777,7 @@ async function runMcpAction(actionType) {
         vertical: preset.name,
         estimatedTimeline: document.getElementById("hleeWeeksVal").textContent,
         estimatedPsEffort: document.getElementById("hleeDaysVal").textContent,
+        includedPhase1UseCases: includedNames,
         guardrails: [
           "80/20 Rule: Phase 1 capped at top 3-5 volume drivers",
           "Sub-300ms orchestration SLA isolated from customer legacy backend latency",
