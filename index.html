@@ -937,7 +937,7 @@
               <span>Baseline Legacy IVR Containment</span>
               <span class="val-badge" id="valBaseContainment">28%</span>
             </div>
-            <input type="range" id="inpBaseContainment" min="5" max="50" step="1" value="28">
+            <input type="range" id="inpBaseContainment" min="0" max="50" step="1" value="28">
           </div>
 
           <div class="form-row">
@@ -2006,7 +2006,8 @@ function getEffectiveUnitAgentCost() {
 
 function autoFitFtes(notify = true) {
   const vol = parseFloat(document.getElementById("inpCallVolume").value) || 450000;
-  const baseCont = (parseFloat(document.getElementById("inpBaseContainment").value) || 28) / 100;
+  const rawBaseCont = parseFloat(document.getElementById("inpBaseContainment").value);
+  const baseCont = (Number.isNaN(rawBaseCont) ? 28 : rawBaseCont) / 100;
   const aht = parseFloat(document.getElementById("inpAht").value) || 340;
   const acw = parseFloat(document.getElementById("inpAcw").value) || 45;
   const occ = Math.max(0.3, (parseFloat(document.getElementById("inpOccupancy").value) || 82) / 100);
