@@ -839,10 +839,12 @@
     .print-only { display: block !important; }
     body { background: #ffffff !important; color: #0f172a !important; }
     .container { max-width: 100% !important; padding: 0 !important; }
-    .card { border: 1px solid #cbd5e1 !important; background: #ffffff !important; color: #0f172a !important; box-shadow: none !important; break-inside: avoid; margin-bottom: 14px !important; }
+    .card, .kpi-card { border: 1px solid #cbd5e1 !important; background: #ffffff !important; color: #0f172a !important; box-shadow: none !important; break-inside: avoid; margin-bottom: 14px !important; }
+    .kpi-label, .kpi-foot { color: #475569 !important; }
+    .kpi-val { color: #0f172a !important; }
     .card-title, h3 { color: #0f172a !important; }
     .card-subtitle, p { color: #334155 !important; }
-    .radar-wrap { background: #070d19 !important; border: 1px solid #1e293b !important; }
+    .radar-wrap, #tcoSvgChart { background: #070d19 !important; border: 1px solid #1e293b !important; border-radius: 8px !important; padding: 10px !important; }
     #ucListContainer, #scopingPhase1UseCasesList { max-height: none !important; overflow: visible !important; }
     th { color: #334155 !important; border-bottom: 2px solid #94a3b8 !important; }
     td { color: #0f172a !important; border-bottom: 1px solid #cbd5e1 !important; }
@@ -1089,7 +1091,10 @@
               <div class="card-title">Annualized TCO Comparison: Human Baseline vs. DIY Frontier LLM vs. Omilia OCP</div>
               <div class="card-subtitle">Includes peak surge multiplier, API orchestration tax, and residual human escalation labor</div>
             </div>
-            <span class="tag tag-emerald" id="tcoOutcomePriceBadge">Outcome-Based Pricing ($0.40/res)</span>
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span class="tag tag-emerald" id="tcoOutcomePriceBadge">Outcome-Based Pricing ($0.40/res)</span>
+              <button type="button" class="btn btn-sm btn-primary no-print" id="btnPrintTco" title="Print or Save Unit Economics &amp; TCO Report as PDF">Print / PDF</button>
+            </div>
           </div>
 
           <div id="tcoSvgChart" style="width: 100%; overflow-x: auto;"></div>
@@ -1110,6 +1115,33 @@
               </tr>
             </thead>
             <tbody id="tcoComparisonTable"></tbody>
+          </table>
+          <div style="display: flex; gap: 10px; margin-top: 12px;" class="no-print">
+            <button type="button" class="btn btn-primary" id="btnPrintTcoBottom" style="flex: 1;">Print / Export PDF Report</button>
+            <button type="button" class="btn" id="btnCopyTcoBrief">Copy TCO Summary</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Unit Economics & Labor Assumptions Table (Included automatically in Print / PDF output) -->
+      <div class="col-12 print-only" style="grid-column: span 12; margin-top: 12px;">
+        <div class="card" id="tcoPrintSummaryCard">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Unit Economics &amp; Contact Center Assumptions Summary</div>
+              <div class="card-subtitle" id="tcoPrintSubtitle">Active volume, containment, labor, and outcome pricing parameters</div>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Volume &amp; Containment Inputs</th>
+                <th>Value</th>
+                <th>Workforce &amp; AI Assist Inputs</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="tcoPrintAssumptionsBody"></tbody>
           </table>
         </div>
       </div>
@@ -1427,6 +1459,7 @@
             <button class="btn btn-primary" id="btnMcpParallel">2. Run Parallel Async Dispatch (&lt;300ms)</button>
             <button class="btn" id="btnMcpArchFit">3. Check Architecture Fit</button>
             <button class="btn" id="btnMcpSowTool">4. Generate SOW Guardrails</button>
+            <button class="btn btn-primary" id="btnMcpTcoRadarTool">5. Request TCO &amp; AI Radar Report</button>
           </div>
 
           <!-- Sub-300ms Latency Waterfall Visualization -->
@@ -2187,6 +2220,45 @@ function recalcTab1() {
       <td><span class="tag tag-emerald">Zero Frontier Egress</span></td>
     </tr>
   `;
+
+  // Populate Print / PDF Unit Economics Assumptions Table
+  const tcoPrintSubtitle = document.getElementById("tcoPrintSubtitle");
+  const tcoPrintBody = document.getElementById("tcoPrintAssumptionsBody");
+  if (tcoPrintSubtitle) {
+    tcoPrintSubtitle.textContent = `${preset.name} — Active Volume, Containment, Labor & Outcome Pricing Parameters`;
+  }
+  if (tcoPrintBody) {
+    const cfoOverrideOn = document.getElementById("chkCfoOverride").checked;
+    const wageVal = document.getElementById("inpWage").value;
+    const burdenVal = document.getElementById("inpBurden").value;
+    const occVal = document.getElementById("inpOccupancy").value;
+    tcoPrintBody.innerHTML = `
+      <tr>
+        <td><strong>Monthly Inbound Call Volume</strong></td>
+        <td>${baseVol.toLocaleString()} calls/mo (${Math.round(effectiveMonthlyCalls).toLocaleString()} w/ ${surge.toFixed(1)}x surge)</td>
+        <td><strong>Loaded Human Cost / Call</strong></td>
+        <td>$${unitHumanCost.toFixed(2)}/call ${cfoOverrideOn ? "(CFO Direct Override)" : `($${wageVal}/hr, ${burdenVal}% burden, ${occVal}% occ)`}</td>
+      </tr>
+      <tr>
+        <td><strong>Baseline Legacy vs. Target Omilia Containment</strong></td>
+        <td>${Math.round(baseCont * 100)}% Baseline &rarr; ${Math.round(targetCont * 100)}% Omilia OCP (+${Math.round((targetCont - baseCont) * 100)}% Lift)</td>
+        <td><strong>TalkGuard Voice Biometrics</strong></td>
+        <td>${talkguardOn ? `Enabled (-${preset.roi.talkguardSec}s KBA reduction)` : "Disabled"}</td>
+      </tr>
+      <tr>
+        <td><strong>Omilia Outcome Rate ($ / Resolved)</strong></td>
+        <td>$${omiliaOutcomeRate.toFixed(2)} / resolved interaction</td>
+        <td><strong>CSR CoPilot Agent Assist</strong></td>
+        <td>${copilotOn ? `Enabled (-${preset.roi.copilotSec}s ACW reduction)` : "Disabled"}</td>
+      </tr>
+      <tr>
+        <td><strong>Average Handle Time (AHT) + ACW</strong></td>
+        <td>${aht}s AHT + ${acw}s ACW (${totalHandleSec}s total handle time)</td>
+        <td><strong>Active Workforce Sizing</strong></td>
+        <td>${agents.toLocaleString()} Agents (${shiftHours} hrs/day, ${document.getElementById("inpWorkDays").value} days/mo)</td>
+      </tr>
+    `;
+  }
 }
 
 function renderTcoSvg(annualLegacy, annualDiy, annualOmilia, outcomeRate = 0.40, scaleMax = 0) {
@@ -2239,6 +2311,34 @@ document.querySelectorAll("[data-wage]").forEach(btn => {
 });
 
 document.getElementById("btnAutoFitFte").addEventListener("click", () => autoFitFtes(true));
+document.getElementById("btnPrintTco").addEventListener("click", () => window.print());
+document.getElementById("btnPrintTcoBottom").addEventListener("click", () => window.print());
+document.getElementById("btnCopyTcoBrief").addEventListener("click", () => {
+  const preset = VERTICAL_PRESETS[state.vertical];
+  const summary = [
+    `OMILIA UNIT ECONOMICS & CFO TCO SUMMARY — ${preset.name.toUpperCase()}`,
+    `========================================================================`,
+    `Annual Net Savings vs. Legacy: ${document.getElementById("kpiAnnualSavings").textContent} (${document.getElementById("kpiMonthlySavings").textContent})`,
+    `3-Year TCO Advantage vs. DIY Frontier LLM: ${document.getElementById("kpiDiyAdvantage").textContent}`,
+    `Containment Lift: ${document.getElementById("kpiContainmentLift").textContent} (${document.getElementById("kpiContainedCalls").textContent})`,
+    `Agent Capacity Reclaimed: ${document.getElementById("kpiAgentDaysSaved").textContent}/agent/mo (${document.getElementById("kpiAgentHoursSaved").textContent}, ${document.getElementById("kpiFtesFreed").textContent})`,
+    ``,
+    `KEY INPUT ASSUMPTIONS:`,
+    `- Monthly Call Volume: ${document.getElementById("valCallVolume").textContent} (Surge: ${document.getElementById("valSurge").textContent})`,
+    `- Containment: ${document.getElementById("valBaseContainment").textContent} Baseline -> ${document.getElementById("valTargetContainment").textContent} Omilia OCP`,
+    `- Omilia Outcome Rate: ${document.getElementById("valOmiliaOutcomeRate").textContent} / resolved interaction`,
+    `- AHT: ${document.getElementById("valAht").textContent} + ${document.getElementById("inpAcw").value}s ACW`,
+    `- ${document.getElementById("kpiEffectiveCostPerCall").textContent}`
+  ].join("\n");
+
+  const ta = document.createElement("textarea");
+  ta.value = summary;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  showToast("Copied Unit Economics & TCO Summary to clipboard");
+});
 
 // ============================================================================
 // 4. TAB 2: AI RADAR 2.0 ENGINE
@@ -2848,6 +2948,22 @@ async function runMcpAction(actionType) {
             name: "generate_partner_sow_guardrails",
             description: "Computes deterministic HLEE timeline, RACI matrix, and 80/20 SOW guardrails.",
             inputSchema: { type: "object", properties: { vertical: { type: "string" }, intents: { type: "number" }, apiReadiness: { type: "string" } }, required: ["vertical", "intents"] }
+          },
+          {
+            name: "calculate_tco_and_ai_radar_report",
+            description: "Returns a complete CFO Unit Economics TCO breakdown (Legacy vs. DIY Frontier LLM vs. Omilia OCP) and AI Radar 2.0 use-case prioritization report for Frontier AI clients.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                vertical: { type: "string", enum: ["banking", "utilities", "insurance", "healthcare", "telecom"] },
+                monthlyCallVolume: { type: "number" },
+                baseContainmentPct: { type: "number" },
+                targetContainmentPct: { type: "number" },
+                omiliaOutcomeRate: { type: "number" },
+                surgeMultiplier: { type: "number" }
+              },
+              required: ["vertical"]
+            }
           }
         ]
       }
@@ -2924,6 +3040,68 @@ async function runMcpAction(actionType) {
         authProtocol: "OAuth 2.0 Client Credentials + mTLS",
         complianceVerified: preset.compliance,
         zeroFrontierEgress: true
+      }
+    };
+  } else if (actionType === "tco_radar") {
+    const activeUcs = getActiveUseCases();
+    const phase1Ucs = getIncludedUseCases();
+    const vol = parseFloat(document.getElementById("inpCallVolume").value) || 450000;
+    const baseCont = parseFloat(document.getElementById("inpBaseContainment").value) || 0;
+    const targetCont = parseFloat(document.getElementById("inpTargetContainment").value) || 58;
+    const outcomeRate = parseFloat(document.getElementById("inpOmiliaOutcomeRate").value) || 0.40;
+    const surge = parseFloat(document.getElementById("inpSurge").value) || 1.4;
+
+    requestPayload = {
+      jsonrpc: "2.0",
+      id: reqId,
+      method: "tools/call",
+      params: {
+        name: "calculate_tco_and_ai_radar_report",
+        arguments: {
+          vertical: state.vertical,
+          monthlyCallVolume: vol,
+          baseContainmentPct: baseCont,
+          targetContainmentPct: targetCont,
+          omiliaOutcomeRate: outcomeRate,
+          surgeMultiplier: surge
+        }
+      }
+    };
+
+    simulatedResponse = {
+      jsonrpc: "2.0",
+      id: reqId,
+      result: {
+        vertical: preset.name,
+        unitEconomicsTcoSummary: {
+          annualNetSavings: document.getElementById("kpiAnnualSavings").textContent,
+          monthlyNetSavings: document.getElementById("kpiMonthlySavings").textContent,
+          threeYearAdvantageVsDiyLlm: document.getElementById("kpiDiyAdvantage").textContent,
+          containmentLift: document.getElementById("kpiContainmentLift").textContent,
+          resolvedCallsPerMonth: document.getElementById("kpiContainedCalls").textContent,
+          agentDaysSavedPerMonth: document.getElementById("kpiAgentDaysSaved").textContent,
+          equivalentFtesFreed: document.getElementById("kpiFtesFreed").textContent,
+          loadedHumanUnitCost: document.getElementById("kpiEffectiveCostPerCall").textContent,
+          omiliaOutcomeRate: `$${outcomeRate.toFixed(2)}/resolved`
+        },
+        aiRadarPortfolio: {
+          totalPlottedUseCases: activeUcs.length,
+          phase1TopRightIncludedCount: phase1Ucs.length,
+          phase1IncludedUseCases: phase1Ucs.map(u => ({
+            name: u.name,
+            feasibility: u.feas,
+            impact: u.imp,
+            runtimeTier: u.runtime,
+            rolloutPlan: u.rollout
+          })),
+          allPlottedUseCases: activeUcs.map(u => ({
+            name: u.name,
+            quadrant: getQuadrantMeta(u.feas, u.imp).label,
+            feasibility: u.feas,
+            impact: u.imp,
+            includedInPhase1Sow: isTopRightQuadrant(u) && u.included !== false
+          }))
+        }
       }
     };
   } else {
@@ -3010,6 +3188,7 @@ document.getElementById("btnMcpToolsList").addEventListener("click", () => runMc
 document.getElementById("btnMcpParallel").addEventListener("click", () => runMcpAction("parallel"));
 document.getElementById("btnMcpArchFit").addEventListener("click", () => runMcpAction("arch"));
 document.getElementById("btnMcpSowTool").addEventListener("click", () => runMcpAction("sow"));
+document.getElementById("btnMcpTcoRadarTool").addEventListener("click", () => runMcpAction("tco_radar"));
 document.getElementById("chkLocalhostBridge").addEventListener("change", (e) => {
   document.getElementById("mcpTransportStatus").textContent = e.target.checked
     ? "Localhost Bridge armed (http://localhost:3333/mcp) — click any action to test"
@@ -3029,7 +3208,7 @@ import http from "node:http";
 
 const server = new McpServer({
   name: "omilia-partner-mcp",
-  version: "1.1.0"
+  version: "1.2.0"
 });
 
 // Tool 1: Architecture & Sovereignty Fit across 5 Verticals
@@ -3106,6 +3285,49 @@ server.tool(
         "Sub-300ms orchestration SLA isolated from legacy backend latency",
         "Mandatory HITL approval gate prior to self-learned flow deployment"
       ]
+    };
+    return { content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] };
+  }
+);
+
+// Tool 4: Unit Economics TCO & AI Radar 2.0 Report for Frontier AI Clients
+server.tool(
+  "calculate_tco_and_ai_radar_report",
+  {
+    vertical: z.enum(["banking", "utilities", "insurance", "healthcare", "telecom"]).default("banking"),
+    monthlyCallVolume: z.number().min(10000).max(5000000).default(450000),
+    baseContainmentPct: z.number().min(0).max(50).default(28),
+    targetContainmentPct: z.number().min(25).max(99).default(58),
+    omiliaOutcomeRate: z.number().min(0.15).max(1.00).default(0.40),
+    ahtSeconds: z.number().min(1).max(720).default(340),
+    surgeMultiplier: z.number().min(1.0).max(4.0).default(1.4),
+    unitHumanCostPerCall: z.number().min(0.50).max(50).default(3.01)
+  },
+  async ({ vertical, monthlyCallVolume, baseContainmentPct, targetContainmentPct, omiliaOutcomeRate, ahtSeconds, surgeMultiplier, unitHumanCostPerCall }) => {
+    const baseCont = baseContainmentPct / 100;
+    const targetCont = Math.max(baseCont + 0.05, targetContainmentPct / 100);
+    const diyCont = Math.max(baseCont + 0.08, targetCont - 0.11);
+    const effectiveCalls = monthlyCallVolume * surgeMultiplier;
+
+    const legacyMo = (effectiveCalls * (1 - baseCont) * unitHumanCostPerCall) + (effectiveCalls * baseCont * 0.14);
+    const omiliaMo = (effectiveCalls * targetCont * omiliaOutcomeRate) + (effectiveCalls * (1 - targetCont) * (unitHumanCostPerCall * 0.83)) + 6500;
+    const diyTokenRate = 0.58 * Math.pow(surgeMultiplier, 1.38);
+    const diyMo = (effectiveCalls * diyCont * diyTokenRate) + (effectiveCalls * (1 - diyCont) * unitHumanCostPerCall) + 28500;
+
+    const payload = {
+      vertical,
+      annualLegacyTcoUsd: Math.round(legacyMo * 12),
+      annualDiyFrontierLlmTcoUsd: Math.round(diyMo * 12),
+      annualOmiliaOcpTcoUsd: Math.round(omiliaMo * 12),
+      annualNetSavingsVsLegacyUsd: Math.round(Math.max(0, legacyMo - omiliaMo) * 12),
+      threeYearAdvantageVsDiyLlmUsd: Math.round(Math.max(0, diyMo - omiliaMo) * 36),
+      effectiveContainmentComparison: {
+        legacyBaselinePct: Math.round(baseCont * 100),
+        diyFrontierLlmPctWithTokenDrift: Math.round(diyCont * 100),
+        omiliaOcpBlendedPct: Math.round(targetCont * 100)
+      },
+      ahtSeconds,
+      omiliaOutcomeRateUsd: omiliaOutcomeRate
     };
     return { content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] };
   }
