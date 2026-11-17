@@ -1091,10 +1091,7 @@
               <div class="card-title">Annualized TCO Comparison: Human Baseline vs. DIY Frontier LLM vs. Omilia OCP</div>
               <div class="card-subtitle">Includes peak surge multiplier, API orchestration tax, and residual human escalation labor</div>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <span class="tag tag-emerald" id="tcoOutcomePriceBadge">Outcome-Based Pricing ($0.40/res)</span>
-              <button type="button" class="btn btn-sm btn-primary no-print" id="btnPrintTco" title="Print or Save Unit Economics &amp; TCO Report as PDF">Print / PDF</button>
-            </div>
+            <span class="tag tag-emerald" id="tcoOutcomePriceBadge">Outcome-Based Pricing ($0.40/res)</span>
           </div>
 
           <div id="tcoSvgChart" style="width: 100%; overflow-x: auto;"></div>
@@ -2311,7 +2308,6 @@ document.querySelectorAll("[data-wage]").forEach(btn => {
 });
 
 document.getElementById("btnAutoFitFte").addEventListener("click", () => autoFitFtes(true));
-document.getElementById("btnPrintTco").addEventListener("click", () => window.print());
 document.getElementById("btnPrintTcoBottom").addEventListener("click", () => window.print());
 document.getElementById("btnCopyTcoBrief").addEventListener("click", () => {
   const preset = VERTICAL_PRESETS[state.vertical];
