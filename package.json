@@ -4,8 +4,9 @@
   "description": "Custom Model Context Protocol (MCP) server for Omilia Partner Pre-Sales, Latency SLA Simulation, and SOW Guardrails.",
   "type": "module",
   "scripts": {
-    "start": "npx tsx src/index.ts",
-    "start:http": "npx tsx src/index.ts --http",
+    "start": "node mcp-server.mjs",
+    "start:http": "node mcp-server.mjs --http",
+    "start:ts": "npx tsx src/index.ts",
     "build": "tsc"
   },
   "dependencies": {
